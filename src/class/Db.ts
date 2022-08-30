@@ -113,5 +113,8 @@ class Db {
         this.match.sync()
         this.playerMatches.sync()
     }
+    public async fristAcess(){
+
+    }
 }
 export default new Db().sync
