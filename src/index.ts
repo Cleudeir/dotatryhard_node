@@ -1,5 +1,6 @@
 import Db from './class/Db';
 import server from './class/Server';
+import matchHistory from './components/Steam/matchHistory';
 
 type obj = {
     [key: string]: any;
@@ -41,5 +42,6 @@ server.post('/db/read', async (req, res) => {
     return res.send("error: use {tableName: string, item?: string, value?: string}")
 })
 server.get('/', async (req, res) => {
+    matchHistory(87683422)
     return res.send({status:"online"})
 })

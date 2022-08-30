@@ -14,7 +14,7 @@ class Db {
         avatarfull: String;
         loccountrycode: String;
     } | any
-    public matches: {
+    public match: {
         match_id: number;
         start_time: number;
         cluster: String;
@@ -46,7 +46,7 @@ class Db {
             avatarfull: { type: DataTypes.STRING, allowNull: true, },
             loccountrycode: { type: DataTypes.STRING, allowNull: true, }
         })
-        this.matches = this.sequelize.define('match', {
+        this.match = this.sequelize.define('match', {
             match_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
             start_time: { type: DataTypes.BIGINT, allowNull: true, },
             cluster: { type: DataTypes.STRING, allowNull: true, },
@@ -95,14 +95,14 @@ class Db {
         this.sync = this.tables()
     }
     private async tables() {
-        this.player.belongsToMany(this.matches, {
+        this.player.belongsToMany(this.match, {
             foreignKey: 'account_id',
             constraints: true,
             through: {
                 model: this.playerMatches
             }
         })
-        this.matches.belongsToMany(this.player, {
+        this.match.belongsToMany(this.player, {
             foreignKey: 'match_id',
             constraints: true,
             through: {
@@ -110,7 +110,7 @@ class Db {
             }
         })
         this.player.sync()
-        this.matches.sync()
+        this.match.sync()
         this.playerMatches.sync()
     }
 }
