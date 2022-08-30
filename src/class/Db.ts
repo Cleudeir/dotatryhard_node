@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { Sequelize } from 'sequelize'
-import { DataTypes } from 'sequelize';
+import { Sequelize, Model, DataTypes } from 'sequelize'
 
 type obj = {
     [key: string]: any;
@@ -9,78 +8,56 @@ type obj = {
 
 class Db {
     private sequelize: any
+    public player: {
+        account_id: number;
+        personaname: String;
+        avatarfull: String;
+        loccountrycode: String;
+    } | any
+    public matches: {
+        match_id: number;
+        start_time: number;
+        cluster: String;
+        dire_score: number;
+        radiant_score: number;
+        duration: number;
+    } | any
+    public playerMatches: {
+        account_id: number;
+        personaname: String,
+        avatarfull: String,
+        loccountrycode: String
+    } | any
+    public sync: any
+
     public constructor() {
         this.sequelize = new Sequelize(
-        String(process.env.DATABASE_DB) || 'DB_DOTA',
-        String(process.env.USER_DB) || 'username',
-        String(process.env.PASSWORD_DB) || '7685' ,
-        {
-            dialect: 'mariadb',
-            host: String(process.env.HOST_DB) || 'localhost' ,
-            port: Number(process.env.PORT_DB) || 3306
-        });
-        this.tables()
-    }
-    private async tables() {
-        const player = this.sequelize.define('PLAYERS', {
-            account_id: {
-                type: DataTypes.BIGINT,
-                allowNull: false,
-                primaryKey: true,
-            },
-            personaname: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            avatarfull: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            loccountrycode: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            }
+            String(process.env.DATABASE_DB),
+            String(process.env.USER_DB),
+            String(process.env.PASSWORD_DB),
+            {
+                dialect: 'mariadb',
+                host: String(process.env.HOST_DB),
+                port: Number(process.env.PORT_DB)
+            });
+        this.player = this.sequelize.define('player', {
+            account_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
+            personaname: { type: DataTypes.STRING, allowNull: true, },
+            avatarfull: { type: DataTypes.STRING, allowNull: true, },
+            loccountrycode: { type: DataTypes.STRING, allowNull: true, }
         })
-        const matches = this.sequelize.define('MATCHES', {
-            match_id: {
-                type: DataTypes.BIGINT,
-                allowNull: false,
-                primaryKey: true,
-            },
-            start_time: {
-                type: DataTypes.BIGINT,
-                allowNull: true,
-            },
-            cluster: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            dire_score: {
-                type: DataTypes.SMALLINT,
-                allowNull: true,
-            },
-            radiant_score: {
-                type: DataTypes.SMALLINT,
-                allowNull: true,
-            },
-            duration: {
-                type: DataTypes.SMALLINT,
-                allowNull: true,
-            },
+        this.matches = this.sequelize.define('match', {
+            match_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
+            start_time: { type: DataTypes.BIGINT, allowNull: true, },
+            cluster: { type: DataTypes.STRING, allowNull: true, },
+            dire_score: { type: DataTypes.SMALLINT, allowNull: true, },
+            radiant_score: { type: DataTypes.SMALLINT, allowNull: true, },
+            duration: { type: DataTypes.SMALLINT, allowNull: true, },
         })
-
-        const playerMatches = this.sequelize.define('PLAYERS_MATCHES', {
-            account_id: {
-                type: DataTypes.BIGINT,
-                allowNull: false,
-                primaryKey: true,
-            },
-            match_id: {
-                type: DataTypes.BIGINT,
-                allowNull: false,
-                primaryKey: true,
-            },
-            assists: {type: DataTypes.SMALLINT.UNSIGNED },
+        this.playerMatches = this.sequelize.define('PLAYERS_MATCHES', {
+            account_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
+            match_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
+            assists: { type: DataTypes.SMALLINT.UNSIGNED },
             deaths: { type: DataTypes.SMALLINT.UNSIGNED },
             denies: { type: DataTypes.SMALLINT.UNSIGNED },
             gold_per_min: { type: DataTypes.SMALLINT.UNSIGNED },
@@ -115,23 +92,26 @@ class Db {
             hero_id: { type: DataTypes.SMALLINT.UNSIGNED },
             player_slot: { type: DataTypes.SMALLINT.UNSIGNED },
         })
-        player.belongsToMany(matches, {
+        this.sync = this.tables()
+    }
+    private async tables() {
+        this.player.belongsToMany(this.matches, {
             foreignKey: 'account_id',
             constraints: true,
             through: {
-                model: playerMatches
+                model: this.playerMatches
             }
         })
-        matches.belongsToMany(player, {
+        this.matches.belongsToMany(this.player, {
             foreignKey: 'match_id',
             constraints: true,
             through: {
-                model: playerMatches
+                model: this.playerMatches
             }
         })
-        console.log(await player.sync())
-        console.log(await matches.sync())
-        console.log(await playerMatches.sync())
+        this.player.sync()
+        this.matches.sync()
+        this.playerMatches.sync()
     }
 }
-export default new Db()
+export default new Db().sync
