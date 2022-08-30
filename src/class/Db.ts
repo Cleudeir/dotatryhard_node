@@ -22,13 +22,13 @@ class Db {
         radiant_score: number;
         duration: number;
     } | any
-    public playerMatches: {
+    public playersMatches: {
         account_id: number;
-        personaname: String,
-        avatarfull: String,
-        loccountrycode: String
+        personaname: String;
+        avatarfull: String;
+        loccountrycode: String;
     } | any
-    public sync: any
+    private sync: any
 
     public constructor() {
         this.sequelize = new Sequelize(
@@ -39,7 +39,7 @@ class Db {
                 dialect: 'mariadb',
                 host: String(process.env.HOST_DB),
                 port: Number(process.env.PORT_DB)
-            });
+            })
         this.player = this.sequelize.define('player', {
             account_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
             personaname: { type: DataTypes.STRING, allowNull: true, },
@@ -54,7 +54,7 @@ class Db {
             radiant_score: { type: DataTypes.SMALLINT, allowNull: true, },
             duration: { type: DataTypes.SMALLINT, allowNull: true, },
         })
-        this.playerMatches = this.sequelize.define('PLAYERS_MATCHES', {
+        this.playersMatches = this.sequelize.define('PLAYERS_MATCHES', {
             account_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
             match_id: { type: DataTypes.BIGINT, allowNull: false, primaryKey: true, },
             assists: { type: DataTypes.SMALLINT.UNSIGNED },
@@ -99,22 +99,22 @@ class Db {
             foreignKey: 'account_id',
             constraints: true,
             through: {
-                model: this.playerMatches
+                model: this.playersMatches
             }
         })
         this.match.belongsToMany(this.player, {
             foreignKey: 'match_id',
             constraints: true,
             through: {
-                model: this.playerMatches
+                model: this.playersMatches
             }
         })
         this.player.sync()
         this.match.sync()
-        this.playerMatches.sync()
+        this.playersMatches.sync()
     }
-    public async fristAcess(){
+    public async start() {
 
     }
 }
-export default new Db().sync
+export default new Db()
