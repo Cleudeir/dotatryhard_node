@@ -16,18 +16,23 @@ export default async function matchHistory(accountId) {
             const playersSingle = new Set();
             const playerMatchesArraySingle = new Set();
             data.result.matches.map((_match) => {
-                matchesSingle.add({
+                matchesSingle.add(JSON.stringify({
                     match_id: +_match.match_id,
                     start_time: +_match.start_time,
                     cluster: '',
                     dire_score: -1,
                     radiant_score: -1,
                     duration: -1,
-                })
-                _match.players.map((_player) => {
-                    console.log(_player)
-                    playersSingle.add(+_player.account_id)
-                    playerMatchesArraySingle.add({
+                }))
+                _match.players.map((_player) => {                
+                    playersSingle.add(
+                        JSON.stringify({
+                            account_id: +_player.account_id,
+                            personaname: '',
+                            avatarfull: '',
+                            loccountrycode: ''
+                        }))
+                    playerMatchesArraySingle.add(JSON.stringify({
                         account_id: +_player.account_id,
                         match_id: +_match.match_id,
                         assists: -1,
@@ -64,25 +69,20 @@ export default async function matchHistory(accountId) {
                         moonshard: -1,
                         hero_id: +_player.hero_id,
                         player_slot: +_player.player_slot,
-                    })
+                    }))
                 },
                 );
             });
             const matchesUnique = [...matchesSingle]
-            const playersUnique = [...playersSingle].map(x => (
-                {
-                    account_id: x,
-                    personaname: '',
-                    avatarfull: '',
-                    loccountrycode: ''
-                }
-            ))
+            const playersUnique = [...playersSingle]
             const playersMatchesUnique = [...playerMatchesArraySingle]
 
-            Db.match.bulkCreate(matchesUnique)
-            Db.player.bulkCreate(playersUnique)
-            Db.playersMatches.bulkCreate(playersMatchesUnique)
-
+        console.log(matchesUnique.length,playersUnique.length,playersMatchesUnique.length)
+        /*
+           await Db.match.bulkCreate(matchesUnique)
+           await Db.player.bulkCreate(playersUnique)
+           await Db.playersMatches.bulkCreate(playersMatchesUnique)
+        */
             return { matchesUnique, playersUnique, playersMatchesUnique }
         }
         console.log('matchHistory', data)
