@@ -1,89 +1,44 @@
 import dotenv from 'dotenv';
-
-
-import fetch from 'node-fetch';
-
-import Db from '../../class/Db';
 dotenv.config();
+const { Op } = require("sequelize");
+import fetch from 'node-fetch';
+import Db from '../../class/Db';
+
 
 export default async function matchHistory(accountId) {
+    const time = Date.now();
     try {
         console.log(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api}`)
         const request = await fetch(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api}`)
         const data = await request.json()
         if (data && data.result && data.result.matches) {
+            const findMatch = await Db.match.findAll({
+                attributes: ['match_id'],
+                logging: false,
+                where: {
+                    match_id: { [Op.or]: data.result.matches.map(x => x.match_id) },
+                }
+            });
+            const findFilterMatch = findMatch.map(x => x.dataValues.match_id)
+            const filteredArray = data.result.matches.filter(value => !findFilterMatch.includes(value.match_id));
+            if (filteredArray.length === 0) {
+                console.log((-time + Date.now()) / 1000, 's');
+                console.log(filteredArray, 'Partidas já existem!')
+                return null;
+            }
             const matchesSingle = new Set();
             const playersSingle = new Set();
-            const playerMatchesArraySingle = new Set();
-            data.result.matches.map((_match) => {
-                matchesSingle.add(JSON.stringify({
-                    match_id: +_match.match_id,
-                    start_time: +_match.start_time,
-                    cluster: '',
-                    dire_score: -1,
-                    radiant_score: -1,
-                    duration: -1,
-                }))
-                _match.players.map((_player) => {                
-                    playersSingle.add(
-                        JSON.stringify({
-                            account_id: +_player.account_id,
-                            personaname: '',
-                            avatarfull: '',
-                            loccountrycode: ''
-                        }))
-                    playerMatchesArraySingle.add(JSON.stringify({
-                        account_id: +_player.account_id,
-                        match_id: +_match.match_id,
-                        assists: -1,
-                        deaths: -1,
-                        denies: -1,
-                        gold_per_min: -1,
-                        hero_damage: -1,
-                        hero_healing: -1,
-                        kills: -1,
-                        last_hits: -1,
-                        net_worth: -1,
-                        tower_damage: -1,
-                        xp_per_min: -1,
-                        win: -1,
-                        ability_0: -1,
-                        ability_1: -1,
-                        ability_2: -1,
-                        ability_3: -1,
-                        Hero_level: -1,
-                        team: +_player.team_number,
-                        leaver_status: -1,
-                        aghanims_scepter: -1,
-                        aghanims_shard: -1,
-                        backpack_0: -1,
-                        backpack_1: -1,
-                        backpack_2: -1,
-                        item_0: -1,
-                        item_1: -1,
-                        item_2: -1,
-                        item_3: -1,
-                        item_4: -1,
-                        item_5: -1,
-                        item_neutral: -1,
-                        moonshard: -1,
-                        hero_id: +_player.hero_id,
-                        player_slot: +_player.player_slot,
-                    }))
+            filteredArray.map((_match) => {
+                matchesSingle.add(+_match.match_id)
+                _match.players.map((_player) => {
+                    playersSingle.add(+_player.account_id === 4294967295 ? (+_player.player_slot + 1) : +_player.account_id)
                 },
                 );
             });
-            const matchesUnique = [...matchesSingle]
-            const playersUnique = [...playersSingle]
-            const playersMatchesUnique = [...playerMatchesArraySingle]
-
-        console.log(matchesUnique.length,playersUnique.length,playersMatchesUnique.length)
-        /*
-           await Db.match.bulkCreate(matchesUnique)
-           await Db.player.bulkCreate(playersUnique)
-           await Db.playersMatches.bulkCreate(playersMatchesUnique)
-        */
-            return { matchesUnique, playersUnique, playersMatchesUnique }
+            const matches = Array.from(matchesSingle).map(x => JSON.parse(x))
+            const players = Array.from(playersSingle).map(x => JSON.parse(x))
+            console.log('matchHistory ',(-time + Date.now()) / 1000, 's');
+            return { matches, players }
         }
         console.log('matchHistory', data)
         return null;

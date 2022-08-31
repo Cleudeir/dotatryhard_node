@@ -95,6 +95,7 @@ class Db {
         this.sync = this.tables()
     }
     private async tables() {
+
         this.player.belongsToMany(this.match, {
             foreignKey: 'account_id',
             constraints: true,
@@ -109,12 +110,24 @@ class Db {
                 model: this.playersMatches
             }
         })
-        this.player.sync()
-        this.match.sync()
-        this.playersMatches.sync()
-    }
-    public async start() {
 
+        this.player.hasMany(this.playersMatches, {
+            foreignKey: 'account_id',
+        })
+        this.playersMatches.belongsTo(this.player, {
+            foreignKey: 'account_id',
+            as: 'profile'
+        })
+        this.match.hasMany(this.playersMatches, {
+            foreignKey: 'match_id',
+        })
+        this.playersMatches.belongsTo(this.match, {
+            foreignKey: 'match_id',
+        })
+
+        this.player.sync({ force: false })
+        this.match.sync({ force: false })
+        this.playersMatches.sync({ force: false })
     }
 }
 export default new Db()
