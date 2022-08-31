@@ -124,10 +124,10 @@ class Db {
         this.playersMatches.belongsTo(this.match, {
             foreignKey: 'match_id',
         })
-
-        this.player.sync({ force: false })
-        this.match.sync({ force: false })
-        this.playersMatches.sync({ force: false })
+        const force = false
+        this.player.sync({ force })
+        this.match.sync({ force })
+        this.playersMatches.sync({ force })
     }
 }
 export default new Db()

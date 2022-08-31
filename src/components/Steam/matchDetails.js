@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import fetch from 'node-fetch';
 import Db from '../../class/Db';
+import regions from './regions';
 const { Op } = require("sequelize");
 
 
@@ -13,15 +14,15 @@ export default async function matchDetails(_matches) {
         attributes: ['match_id'],
         logging: false,
         where: {
-          match_id: { [Op.or]: _matches },
+            match_id: { [Op.or]: _matches },
         }
-      });
-      const findFilterMatches = findMatches.map(x => x.dataValues.match_id)
-      const filteredArray = _matches.filter(value => !findFilterMatches.includes(value));
-      if (filteredArray === 0) {
-        console.log('match_id: ',(-time + Date.now()) / 1000, 's');
+    });
+    const findFilterMatches = findMatches.map(x => x.dataValues.match_id)
+    const filteredArray = _matches.filter(value => !findFilterMatches.includes(value));
+    if (filteredArray === 0) {
+        console.log('match_id: ', (-time + Date.now()) / 1000, 's');
         return null;
-      }
+    }
 
     const playersMatches = []
     for (let i = 0; i < _matches.length; i += 1) {
@@ -35,7 +36,7 @@ export default async function matchDetails(_matches) {
                 matches.push({
                     match_id: +res.match_id,
                     start_time: +res.start_time,
-                    cluster: res.cluster,
+                    cluster: regions(+res.cluster),
                     dire_score: res.dire_score,
                     radiant_score: res.radiant_score,
                     duration: res.duration,
@@ -98,6 +99,6 @@ export default async function matchDetails(_matches) {
     const promisePlayersMatches = await Promise.all(playersMatches);
     await Db.playersMatches.bulkCreate(promisePlayersMatches, { ignoreDuplicates: true, updateOnDuplicate: ["account_id", "match_id"], logging: false })
 
-    console.log('matches ',(-time + Date.now()) / 1000, 's');
+    console.log('matches ', (-time + Date.now()) / 1000, 's');
     return { matches: promiseMatches, playersMatches: promisePlayersMatches };
 }
