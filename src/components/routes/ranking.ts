@@ -27,7 +27,7 @@ export default async function ranking(limit: number): Promise<obj> {
         logging: false,
         group: 'account_id',
         order: [['matches','DESC']],
-        where: {matches:{}}
+        where: {matches:{[Op.gte]: 6}},
         limit: limit
     }))
     const [avgGlobal] = (await Db.playersMatches.findAll({
