@@ -1,12 +1,15 @@
 import sequelize from 'sequelize';
 import Db from '../../class/Db';
-const { Op } = require("sequelize");
+import { Op } from "sequelize";
 
 
 type obj = {
     [key: string]: any;
 };
-export default async function ranking(limit: number): Promise<obj> {
+export default async function ranking(limit?: number): Promise<obj> {
+    if (!limit) {
+        limit = 10000
+    }
     const avgPlayer = (await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -26,10 +29,17 @@ export default async function ranking(limit: number): Promise<obj> {
         ],
         logging: false,
         group: 'account_id',
-        order: [['matches','DESC']],
-        where: {matches:{[Op.gte]: 6}},
-        limit: limit
-    }))
+        order: [['matches', 'DESC']],
+        include: [{
+            model: Db.player,
+            as: 'profile'
+        }],
+        where: {
+            account_id: { [Op.gte]: 150 }
+        },
+        limit: limit,
+    })).map((x: { dataValues: any; }) => x.dataValues)
+
     const [avgGlobal] = (await Db.playersMatches.findAll({
         attributes: [
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -47,9 +57,51 @@ export default async function ranking(limit: number): Promise<obj> {
             [sequelize.fn('sum', sequelize.col('leaver_status')), 'leaver_status'],
             [sequelize.fn('count', sequelize.col('match_id')), 'matches'],
         ],
+        where: {
+            account_id: { [Op.gte]: 150 }
+        },
         logging: false,
-        limit: limit * 10
-    }))
+    })).map((x: { dataValues: any; }) => x.dataValues)
 
-    return { avgPlayer, avgGlobal }
+    const result = avgPlayer.map((player: obj) => ({
+        assists: Math.floor(+player.assists * 10) / 10,
+        denies: Math.floor(+player.denies * 10) / 10,
+        deaths: Math.floor(+player.deaths * 10) / 10,
+        gold_per_min: Math.floor(+player.gold_per_min * 10) / 10,
+        hero_damage: Math.floor(+player.hero_damage * 10) / 10,
+        hero_healing: Math.floor(+player.hero_healing * 10) / 10,
+        kills: Math.floor(+player.kills * 10) / 10,
+        last_hits: Math.floor(+player.last_hits * 10) / 10,
+        net_worth: Math.floor(+player.net_worth * 10) / 10,
+        tower_damage: Math.floor(+player.tower_damage * 10) / 10,
+        xp_per_min: Math.floor(+player.xp_per_min * 10) / 10,
+        win: Math.floor(+player.win * 10) / 10,
+        matches: Math.floor(player.matches * 10) / 10,
+        winRate: Math.floor((player.win / player.matches) * 100 * 10) / 10,
+        rankingRate: Math.floor(((
+            (+player.assists / +avgGlobal.assists) * 1
+            + (+player.denies / +avgGlobal.denies) * 1
+            + (+player.kills / +avgGlobal.kills) * 0.5
+            + (+avgGlobal.deaths / (+player.deaths === 0 ? avgGlobal.deaths : +player.deaths)) * 1
+            + (+player.gold_per_min / +avgGlobal.gold_per_min) * 0.5
+            + (+player.hero_damage / +avgGlobal.hero_damage) * 0.5
+            + (+player.last_hits / +avgGlobal.last_hits) * 0.5
+            + (+player.hero_healing / +avgGlobal.hero_healing) * 0.5
+            + (+player.net_worth / +avgGlobal.net_worth) * 0.5
+            + (+player.tower_damage / +avgGlobal.tower_damage) * 2
+            + (+player.xp_per_min / +avgGlobal.xp_per_min) * 1
+            + ((player.win / player.matches) / 0.5) * 2
+        )
+            / (1 * 4 + 0.5 * 6 + 2 * 2)
+        ) * 3000),
+        profile: player.profile
+    }))
+    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a, b) {
+        if (a.rankingRate > b.rankingRate)
+            return -1;
+        if (a.rankingRate < b.rankingRate)
+            return 1;
+        return 0;
+    })
+    return resultOrder
 }
