@@ -1,4 +1,5 @@
-{
+export const ability = function (id) {
+  const list = {
     "0": "ability_base",
     "82": "bear_empty1",
     "83": "bear_empty2",
@@ -2292,3 +2293,18 @@
     "9998": "roshan_halloween_apocalypse",
     "9999": "roshan_halloween_burn"
   }
+  let result = ''
+  if (!id) {
+    result =  "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
+    return result;
+}
+  Object.keys(list).forEach((key) => {
+    if (+key === +id) {
+      result = `https://cdn.datdota.com/images/ability/${list[key]}.png`;
+    }
+  });
+  if(result ===''){
+    result =  "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
+  }
+  return result
+}

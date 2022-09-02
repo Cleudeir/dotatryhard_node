@@ -12,7 +12,7 @@ export default async function matchHistory(accountId) {
         const request = await fetch(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api2}`)
         const data = await request.json()
         if (data && data.result && data.result.matches) {
-            const findMatch = (await Db.match.findAll({
+            const findMatch = (await Db.playersMatches.findAll({
                 attributes: ['match_id'],
                 logging: false,
                 where: {
@@ -20,6 +20,7 @@ export default async function matchHistory(accountId) {
                 },
                 raw:true
             })).map(x=>x.match_id)
+
             const filteredArray = data.result.matches.filter(value => !findMatch.includes(value.match_id));
             if (filteredArray.length === 0) {
                 console.log((-time + Date.now()) / 1000, 's');
@@ -40,10 +41,10 @@ export default async function matchHistory(accountId) {
             console.log('matchHistory ',(-time + Date.now()) / 1000, 's');
             return { matches, players }
         }
-        console.log('matchHistory', data)
+        console.log('matchHistory-data', data)
         return null;
     } catch (error) {
-        console.log('matchHistory', error)
+        console.log('matchHistory-error', error)
         return null;
     }
 }

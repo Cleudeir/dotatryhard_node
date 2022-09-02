@@ -8,26 +8,9 @@ type obj = {
 
 class Db {
     private sequelize: any
-    public player: {
-        account_id: number;
-        personaname: String;
-        avatarfull: String;
-        loccountrycode: String;
-    } | any
-    public match: {
-        match_id: number;
-        start_time: number;
-        cluster: String;
-        dire_score: number;
-        radiant_score: number;
-        duration: number;
-    } | any
-    public playersMatches: {
-        account_id: number;
-        personaname: String;
-        avatarfull: String;
-        loccountrycode: String;
-    } | any
+    public player: any
+    public match:any
+    public playersMatches: any
     private sync: any
 
     public constructor() {
@@ -69,10 +52,10 @@ class Db {
             tower_damage: { type: DataTypes.SMALLINT },
             xp_per_min: { type: DataTypes.SMALLINT },
             win: { type: DataTypes.TINYINT },
-            ability_0: { type: DataTypes.SMALLINT },
-            ability_1: { type: DataTypes.SMALLINT },
-            ability_2: { type: DataTypes.SMALLINT },
-            ability_3: { type: DataTypes.SMALLINT },
+            ability_0: { type: DataTypes.STRING },
+            ability_1: { type: DataTypes.STRING },
+            ability_2: { type: DataTypes.STRING },
+            ability_3: { type: DataTypes.STRING },
             Hero_level: { type: DataTypes.SMALLINT },
             team: { type: DataTypes.TINYINT },
             leaver_status: { type: DataTypes.TINYINT },
@@ -81,15 +64,15 @@ class Db {
             backpack_0: { type: DataTypes.SMALLINT },
             backpack_1: { type: DataTypes.SMALLINT },
             backpack_2: { type: DataTypes.SMALLINT },
-            item_0: { type: DataTypes.SMALLINT },
-            item_1: { type: DataTypes.SMALLINT },
-            item_2: { type: DataTypes.SMALLINT },
-            item_3: { type: DataTypes.SMALLINT },
-            item_4: { type: DataTypes.SMALLINT },
-            item_5: { type: DataTypes.SMALLINT },
+            item_0: { type: DataTypes.STRING },
+            item_1: { type: DataTypes.STRING },
+            item_2: { type: DataTypes.STRING },
+            item_3: { type: DataTypes.STRING },
+            item_4: { type: DataTypes.STRING },
+            item_5: { type: DataTypes.STRING },
             item_neutral: { type: DataTypes.SMALLINT },
             moonshard: { type: DataTypes.SMALLINT },
-            hero_id: { type: DataTypes.SMALLINT },
+            hero_id: { type: DataTypes.STRING },
             player_slot: { type: DataTypes.SMALLINT },
         })
         this.sync = this.tables()

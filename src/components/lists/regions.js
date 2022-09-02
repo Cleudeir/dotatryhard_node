@@ -23,7 +23,6 @@ const regions = function (id) {
         37: 'ASIAN',
         38: 'SOUTH AMERICA',
     };
-
     const cluster = {
         111: 1,
         112: 1,
@@ -98,7 +97,12 @@ const regions = function (id) {
         346: 38,
         347: 38,
     };
-    let result = [];
+    let result = '';
+    if (!id) {
+        console.log("Region: ", id)
+        result = 'SOUTH AMERICA'
+        return result;
+    }
     Object.keys(cluster).forEach((key) => {
         Object.keys(region).forEach((type) => {
             if (+cluster[key] === +type) {
@@ -108,6 +112,10 @@ const regions = function (id) {
             }
         });
     });
+    if (result === '') {
+        result = 'SOUTH AMERICA'
+        return result;
+    }
     return result;
 }
 export default regions;

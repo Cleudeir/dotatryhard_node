@@ -6,7 +6,7 @@ import sequelize from 'sequelize';
 type obj = {
     [key: string]: any;
 };
-export default async function playerHistory(account_id: number, limit?: number): Promise<obj> {
+export default async function playerHistory({ account_id, limit }): Promise<obj> {
     if (!limit) {
         limit = 10000
     }
