@@ -2,3 +2,4 @@
 /dist
 /mysql
 .env
+/build
