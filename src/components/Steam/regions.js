@@ -1,27 +1,27 @@
 const regions = function (id) {
     const region = {
-        1: 'US WEST',
-        2: 'US EAST',
+        1: 'NORTH AMERICA',
+        2: 'NORTH AMERICA',
         3: 'EUROPE',
-        5: 'SINGAPORE',
-        6: 'DUBAI',
-        7: 'AUSTRALIA',
-        8: 'STOCKHOLM',
-        9: 'AUSTRIA',
-        10: 'BRAZIL',
+        5: 'ASIAN',
+        6: 'MIDDLE EAST',
+        7: 'ASIAN',
+        8: 'EUROPE',
+        9: 'EUROPE',
+        10: 'SOUTH AMERICA',
         11: 'SOUTH AFRICA',
-        12: 'PW SHANGHAI',
-        13: 'PW UNICOM',
-        14: 'CHILE',
-        15: 'PERU',
+        12: 'CHINA',
+        13: 'CHINA',
+        14: 'SOUTH AMERICA',
+        15: 'SOUTH AMERICA',
         16: 'INDIA',
-        17: 'PW GUANGDONG',
-        18: 'PW ZHEJIANG',
-        19: 'JAPAN',
-        20: 'PW WUHAN',
-        25: 'PW TIANJIN',
-        37: 'TAIWAN',
-        38: 'ARGENTINA',
+        17: 'CHINA',
+        18: 'CHINA',
+        19: 'ASIAN',
+        20: 'CHINA',
+        25: 'CHINA',
+        37: 'ASIAN',
+        38: 'SOUTH AMERICA',
     };
 
     const cluster = {
@@ -108,7 +108,6 @@ const regions = function (id) {
             }
         });
     });
-    console.log(result)
     return result;
 }
 export default regions;

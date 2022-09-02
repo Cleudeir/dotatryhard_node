@@ -10,23 +10,27 @@ const { Op } = require("sequelize");
 export default async function matchDetails(_matches) {
     const time = Date.now();
     const matches = []
+    const playerUnique = new Set();
+    const playersMatches = []
+
     const findMatches = await Db.playersMatches.findAll({
         attributes: ['match_id'],
         logging: false,
         where: {
             match_id: { [Op.or]: _matches },
-        }
-    });
-    const findFilterMatches = findMatches.map(x => x.dataValues.match_id)
-    const filteredArray = _matches.filter(value => !findFilterMatches.includes(value));
+        },
+        raw: true
+    })
+
+    const filteredArray = _matches.filter(value => !findMatches.includes(value));
     if (filteredArray === 0) {
         console.log('match_id: ', (-time + Date.now()) / 1000, 's');
         return null;
     }
 
-    const playersMatches = []
+
     for (let i = 0; i < _matches.length; i += 1) {
-        console.log('matches: ', i, "/", _matches.length)
+        console.log('matchesDetails: ', i, "/", _matches.length)
         try {
             const request = await fetch(`${process.env.base_url}/IDOTA2Match_570/GetMatchDetails/v1?match_id=${_matches[i]}&key=${process.env.key_api}`)
             const data = await request.json()
@@ -41,8 +45,16 @@ export default async function matchDetails(_matches) {
                     radiant_score: res.radiant_score,
                     duration: res.duration,
                 })
+
                 data.result.players.map(_player => {
                     const uniqueAbility = new Set();
+
+                    playerUnique.add(JSON.stringify({
+                        loccountrycode: regions(+res.cluster),
+                        account_id: +_player.account_id === 4294967295 ? (+_player.player_slot + 1) : +_player.account_id,
+                    },
+                    ))
+
                     _player.ability_upgrades.map(x => uniqueAbility.add(x.ability))
                     const abilities = Array.from(uniqueAbility)
                     let win = 0;
@@ -98,6 +110,20 @@ export default async function matchDetails(_matches) {
 
     const promisePlayersMatches = await Promise.all(playersMatches);
     await Db.playersMatches.bulkCreate(promisePlayersMatches, { ignoreDuplicates: true, updateOnDuplicate: ["account_id", "match_id"], logging: false })
+
+
+    const promisePlayers = await Promise.all(playerUnique);
+
+    [...promisePlayers].map(x => {
+        const item = JSON.parse(x);
+        Db.player.update({ loccountrycode: item.loccountrycode },
+            {
+                logging: false,
+                where: {
+                    account_id: item.account_id
+                }
+            })
+    })
 
     console.log('matches ', (-time + Date.now()) / 1000, 's');
     return { matches: promiseMatches, playersMatches: promisePlayersMatches };

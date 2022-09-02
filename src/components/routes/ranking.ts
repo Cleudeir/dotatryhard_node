@@ -32,7 +32,8 @@ export default async function ranking(limit?: number): Promise<obj> {
         order: [['matches', 'DESC']],
         include: [{
             model: Db.player,
-            as: 'profile'
+            as: 'profile',
+            attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
         }],
         where: {
             account_id: { [Op.gte]: 150 }

@@ -114,13 +114,16 @@ class Db {
         this.player.hasMany(this.playersMatches, {
             foreignKey: 'account_id',
         })
+
+        this.match.hasMany(this.playersMatches, {
+            foreignKey: 'match_id',
+        })
+        
         this.playersMatches.belongsTo(this.player, {
             foreignKey: 'account_id',
             as: 'profile'
         })
-        this.match.hasMany(this.playersMatches, {
-            foreignKey: 'match_id',
-        })
+       
         this.playersMatches.belongsTo(this.match, {
             foreignKey: 'match_id',
         })

@@ -1,8 +1,5 @@
 import Db from '../../class/Db';
-import matchDetails from '../Steam/matchDetails';
-import matchHistory from '../Steam/matchHistory';
-import profiles from '../Steam/profiles';
-const { Op } = require("sequelize");
+import { Op } from "sequelize";
 import sequelize from 'sequelize';
 
 
@@ -13,22 +10,16 @@ export default async function playerHistory(account_id: number, limit?: number):
     if (!limit) {
         limit = 10000
     }
-    const history = await matchHistory(account_id)
-    if (history) {
-        await profiles(history.players)
-        await matchDetails(history.matches)
-    }
     const findMatchesIds = (await Db.playersMatches.findAll({
         attributes: ['match_id'],
         logging: false,
         where: {
-            account_id: 87683422
+            account_id
         },
-        order: ['updatedAt'],
+        order: [['match_id', 'DESC']],
         include: [Db.match],
         limit: +limit
     }))
-
     const findMatchesInfo: obj = await Db.playersMatches.findAll({
         logging: false,
         where: {
@@ -36,7 +27,8 @@ export default async function playerHistory(account_id: number, limit?: number):
         },
         include: [{
             model: Db.player,
-            as: 'profile'
+            as: 'profile',
+            attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
         }]
     })
     const matches: obj = []
@@ -131,5 +123,5 @@ export default async function playerHistory(account_id: number, limit?: number):
         ) * 3000),
         profile: avg.profile
     }
-    return { matches, avg: result}
+    return { matches, avg: result }
 }
