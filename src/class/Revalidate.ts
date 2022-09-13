@@ -17,10 +17,10 @@ export default class Revalidate {
 		this.count = 0;
 		this.data = [];
 	}
-	async check(_function: Function, params: any): Promise<void> {
+	async check(_function: Function, params: any): Promise<obj> {
 		this.count += 1
 		if (this.count === 1) {
-			this.data = await _function(params);
+			this.data = await _function(params);			
 			console.log("Revalidate start")
 		}
 
@@ -31,5 +31,6 @@ export default class Revalidate {
 			this.data = _function(params);
 			this.timeStart = Date.now();
 		}
+		return this.data
 	}
 }

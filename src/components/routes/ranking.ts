@@ -97,12 +97,14 @@ export default async function ranking(limit?: number): Promise<obj> {
         ) * 3000),
         profile: player.profile
     }))
-    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a, b) {
+    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
         if (a.rankingRate > b.rankingRate)
             return -1;
         if (a.rankingRate < b.rankingRate)
             return 1;
         return 0;
     })
-    return resultOrder
+    const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i+1) }))
+
+    return resultIds
 }

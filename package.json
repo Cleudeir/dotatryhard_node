@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./build/index.js",
+    "start": "cp .env /build ; node ./build/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "rimraf ./build && tsc ; node ./build/index.js"
+    "build": "sucrase ./src -d ./build --transforms typescript,imports"
   },
   "keywords": [],
   "author": "",

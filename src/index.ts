@@ -57,8 +57,23 @@ server.get('/add', async (req, res) => {
     return res.send(result)
 })
 
+
+const findAndUpdate = new Revalidate("findAndUpdate", 4)
+const _ranking = new Revalidate("ranking", 4)
+
 server.get('/ranking', async (req, res) => {
     const limit = req.query.limit as unknown as number
-    const result = await ranking(limit)
+    const result = await _ranking.check(ranking, limit)
+    let count: number = 0
+
+    if (count < 300) {
+        findAndUpdate.check(updateMatches, result[count].profile.account_id)
+        count++
+        setInterval(() => {
+            const element = result[count];
+            count++
+            findAndUpdate.check(updateMatches, element.profile.account_id)
+        }, 5 * 60 * 1000)
+    }
     return res.send(result)
 })

@@ -1,15 +1,17 @@
 import Db from '../../class/Db';
 import { Op } from "sequelize";
 import sequelize from 'sequelize';
+import profiles from '../Steam/profiles';
 
 
 type obj = {
     [key: string]: any;
 };
-export default async function playerHistory({ account_id, limit }): Promise<obj> {
+export default async function playerHistory({ account_id , limit }: obj): Promise<obj> {
     if (!limit) {
         limit = 10000
     }
+
     const findMatchesIds = (await Db.playersMatches.findAll({
         attributes: ['match_id'],
         logging: false,
