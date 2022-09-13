@@ -45,15 +45,15 @@ console.warn(
 )
 
 server.get('/add', async (req, res) => {
-    const account_id = req.query.account_id as unknown as number
-    const limit = req.query.limit as unknown as number
+    const account_id = req.query.account_id as unknown as string
+    const limit = req.query.limit as unknown as string
     console.log(account_id)
     if (+account_id === undefined) {
         return res.send({ account_id: 'undefined' })
     }
 
     await update.check(updateMatches, account_id)
-    const result = await playerHistory({ account_id: +account_id, limit })
+    const result = await playerHistory({ account_id: +account_id, limit: +limit })
     return res.send(result)
 })
 
@@ -62,8 +62,9 @@ const findAndUpdate = new Revalidate("findAndUpdate", 4)
 const _ranking = new Revalidate("ranking", 4)
 
 server.get('/ranking', async (req, res) => {
-    const limit = req.query.limit as unknown as number
-    const result = await _ranking.check(ranking, limit)
+    const limit = req.query.limit as unknown as string
+    console.log({limit})
+    const result = await _ranking.check(ranking, +limit)
     let count: number = 0
 
     if (count < 300) {
