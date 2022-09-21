@@ -9,7 +9,7 @@ type obj = {
 };
 export default async function infos({ account_id, limit }: obj): Promise<obj> {
     if (!limit) {
-        limit = 200
+        limit = 300
     }
 
     const findMatchesIds = (await Db.playersMatches.findAll({
