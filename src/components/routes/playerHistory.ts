@@ -125,71 +125,8 @@ export default async function playerHistory({ account_id, limit }: obj): Promise
         ) * 3000),
         profile: avg.profile
     }
-    console.log(matches[0].players[0].account_id)
-    console.log(matches[0].players[0].win)
-    const playersSameGame: any[] = []
-    const uniquePlayers: Set<number> = new Set()
-    matches.map((item: { players: any[]; }) => {
-        const [{ player_slot }] = item.players.filter(x => x.account_id === account_id)
-        if (player_slot > 100) {
-            const _players = item.players.filter(x => x.player_slot > 100)
 
-            _players.map(x => x.profile)
-                .filter(x => x.account_id > 150 && x.account_id !== account_id)
-                .map(x => {
-                    playersSameGame.push({
-                        account_id: x.account_id,
-                        avatarfull: x.avatarfull,
-                        loccountrycode: x.loccountrycode,
-                        personaname: x.personaname,
-                        win: _players[0].win
-                    });
-                    uniquePlayers.add(x.account_id)
-                })
-        } else {
-            const _players = item.players.filter(x => x.player_slot < 100)
 
-            _players.map(x => x.profile)
-                .filter(x => x.account_id > 150 && x.account_id !== account_id)
-                .map(x => {
-                    playersSameGame.push({
-                        account_id: x.account_id,
-                        avatarfull: x.avatarfull,
-                        loccountrycode: x.loccountrycode,
-                        personaname: x.personaname,
-                        win: _players[0].win
-                    });
-                    uniquePlayers.add(x.account_id)
-                })
-        }
-    }
-    )
-
-    const arryUniquePlayers: number[] = Array.from(uniquePlayers)
-
-    const playersWinRate: any[] = []
-
-    arryUniquePlayers.map(id => {
-        let win = 0
-        let loss = 0
-        const [profile] = playersSameGame
-            .filter((x) => x.account_id === id)
-            .map(x => {
-                if (x.win === 1) {
-                    win++
-                } else {
-                    loss++
-                }
-                return x
-            })
-        playersWinRate.push({ profile, win,loss, matches: win + loss, winRate: Math.floor((win / (win + loss)) * 10000) / 100 })
-
-    })
-    const friendsGamed = playersWinRate.sort((a: any, b: any) => {
-        if (a.matches > b.matches) return -1;
-        if (a.matches < b.matches) return 1;
-        return 0;
-    })
-
-    return { friendsGamed, matches, avg: result }
+    return { matches, avg: result }
 }
+
