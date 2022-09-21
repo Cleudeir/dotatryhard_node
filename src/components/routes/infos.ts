@@ -1,15 +1,12 @@
 import Db from '../../class/Db';
 import { Op } from "sequelize";
-import sequelize from 'sequelize';
-import profiles from '../Steam/profiles';
-
 
 type obj = {
     [key: string]: any;
 };
 export default async function infos({ account_id, limit }: obj): Promise<obj> {
     if (!limit) {
-        limit = 300
+        limit = 500
     }
 
     const findMatchesIds = (await Db.playersMatches.findAll({
@@ -47,9 +44,10 @@ export default async function infos({ account_id, limit }: obj): Promise<obj> {
     const playersEnemyTeamGame: { profile: any; win: any; }[] = [];
     const uniqueAlliesPlayers = new Set();
     const uniqueEnemyPlayers = new Set();
-    matches.map((item: { players: { filter: (arg0: (x: any) => boolean) => [{ player_slot: any; win: any; }]; map: (arg0: (x: any) => void) => void; }; }) => {
-        const [{ player_slot, win }] = item.players.filter((x) => x.account_id === account_id);
-
+    let person = undefined
+    matches.map((item: { players: { filter: (arg0: (x: any) => boolean) => [{ player_slot: any; win: any; profile: any }]; map: (arg0: (x: any) => void) => void; }; }) => {
+        const [{ player_slot, win, profile }] = item.players.filter((x) => x.account_id === account_id);
+        person = profile
         item.players.map((x) => {
             if (x.account_id > 150 && x.account_id !== account_id && x.player_slot > 100 && player_slot > 100) {
                 playersAlliesTeamGame.push({
@@ -84,7 +82,7 @@ export default async function infos({ account_id, limit }: obj): Promise<obj> {
 
     const alliesPlayers = await orderAlliesEnemy(uniqueAlliesPlayers, playersAlliesTeamGame);
     const enemyPlayers = await orderAlliesEnemy(uniqueEnemyPlayers, playersEnemyTeamGame);
-    return { alliesPlayers, enemyPlayers };
+    return { alliesPlayers, enemyPlayers, profile: person };
 }
 
 
