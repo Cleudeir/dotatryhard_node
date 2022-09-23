@@ -1,6 +1,7 @@
 import sequelize from 'sequelize';
 import Db from '../../class/Db';
 import { Op } from "sequelize";
+import rankingRate from '../Math/rankingRate';
 
 
 type obj = {
@@ -64,39 +65,7 @@ export default async function ranking(limit?: number): Promise<obj> {
         logging: false,
     })).map((x: { dataValues: any; }) => x.dataValues)
 
-    const result = avgPlayer.map((player: obj) => ({
-        assists: Math.floor(+player.assists * 10) / 10,
-        denies: Math.floor(+player.denies * 10) / 10,
-        deaths: Math.floor(+player.deaths * 10) / 10,
-        gold_per_min: Math.floor(+player.gold_per_min * 10) / 10,
-        hero_damage: Math.floor(+player.hero_damage * 10) / 10,
-        hero_healing: Math.floor(+player.hero_healing * 10) / 10,
-        kills: Math.floor(+player.kills * 10) / 10,
-        last_hits: Math.floor(+player.last_hits * 10) / 10,
-        net_worth: Math.floor(+player.net_worth * 10) / 10,
-        tower_damage: Math.floor(+player.tower_damage * 10) / 10,
-        xp_per_min: Math.floor(+player.xp_per_min * 10) / 10,
-        win: Math.floor(+player.win * 10) / 10,
-        matches: Math.floor(player.matches * 10) / 10,
-        winRate: Math.floor((player.win / player.matches) * 100 * 10) / 10,
-        rankingRate: Math.floor(((
-            (+player.assists / +avgGlobal.assists) * 1
-            + (+player.denies / +avgGlobal.denies) * 1
-            + (+player.kills / +avgGlobal.kills) * 0.5
-            + (+avgGlobal.deaths / (+player.deaths === 0 ? avgGlobal.deaths : +player.deaths)) * 1
-            + (+player.gold_per_min / +avgGlobal.gold_per_min) * 0.5
-            + (+player.hero_damage / +avgGlobal.hero_damage) * 0.5
-            + (+player.last_hits / +avgGlobal.last_hits) * 0.5
-            + (+player.hero_healing / +avgGlobal.hero_healing) * 0.5
-            + (+player.net_worth / +avgGlobal.net_worth) * 0.5
-            + (+player.tower_damage / +avgGlobal.tower_damage) * 2
-            + (+player.xp_per_min / +avgGlobal.xp_per_min) * 1
-            + ((player.win / player.matches) / 0.5) * 2
-        )
-            / (1 * 4 + 0.5 * 6 + 2 * 2)
-        ) * 3000),
-        profile: player.profile
-    }))
+    const result = avgPlayer.map((avg: obj) => (rankingRate(avg, avgGlobal)))
     const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
         if (a.rankingRate > b.rankingRate)
             return -1;
@@ -104,7 +73,7 @@ export default async function ranking(limit?: number): Promise<obj> {
             return 1;
         return 0;
     })
-    const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i+1) }))
+    const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i + 1) }))
 
     return resultIds
 }

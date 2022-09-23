@@ -2,6 +2,7 @@ import Db from '../../class/Db';
 import { Op } from "sequelize";
 import sequelize from 'sequelize';
 import profiles from '../Steam/profiles';
+import rankingRate from '../Math/rankingRate';
 
 
 type obj = {
@@ -92,40 +93,8 @@ export default async function playerHistory({ account_id, limit }: obj): Promise
         raw: true
     }))
 
-    const result = {
-        assists: Math.floor(+avg.assists * 10) / 10,
-        denies: Math.floor(+avg.denies * 10) / 10,
-        deaths: Math.floor(+avg.deaths * 10) / 10,
-        gold_per_min: Math.floor(+avg.gold_per_min * 10) / 10,
-        hero_damage: Math.floor(+avg.hero_damage * 10) / 10,
-        hero_healing: Math.floor(+avg.hero_healing * 10) / 10,
-        kills: Math.floor(+avg.kills * 10) / 10,
-        last_hits: Math.floor(+avg.last_hits * 10) / 10,
-        net_worth: Math.floor(+avg.net_worth * 10) / 10,
-        tower_damage: Math.floor(+avg.tower_damage * 10) / 10,
-        xp_per_min: Math.floor(+avg.xp_per_min * 10) / 10,
-        win: Math.floor(+avg.win * 10) / 10,
-        matches: Math.floor(avg.matches * 10) / 10,
-        winRate: Math.floor((avg.win / avg.matches) * 100 * 10) / 10,
-        rankingRate: Math.floor(((
-            (+avg.assists / +avgGlobal.assists) * 1
-            + (+avg.denies / +avgGlobal.denies) * 1
-            + (+avg.kills / +avgGlobal.kills) * 0.5
-            + (+avgGlobal.deaths / (+avg.deaths === 0 ? avgGlobal.deaths : +avg.deaths)) * 1
-            + (+avg.gold_per_min / +avgGlobal.gold_per_min) * 0.5
-            + (+avg.hero_damage / +avgGlobal.hero_damage) * 0.5
-            + (+avg.last_hits / +avgGlobal.last_hits) * 0.5
-            + (+avg.hero_healing / +avgGlobal.hero_healing) * 0.5
-            + (+avg.net_worth / +avgGlobal.net_worth) * 0.5
-            + (+avg.tower_damage / +avgGlobal.tower_damage) * 2
-            + (+avg.xp_per_min / +avgGlobal.xp_per_min) * 1
-            + ((avg.win / avg.matches) / 0.5) * 2
-        )
-            / (1 * 4 + 0.5 * 6 + 2 * 2)
-        ) * 3000),
-        profile: avg.profile
-    }
-
+    const result = rankingRate(avg,avgGlobal)
+    console.log(result)
 
     return { matches, avg: result }
 }
