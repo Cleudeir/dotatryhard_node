@@ -8,6 +8,7 @@ async function start(account_id) {
         await profiles(history.players)
         await matchDetails(history.matches)
     }
+    return history
 }
 
 export default start;

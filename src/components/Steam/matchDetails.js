@@ -31,7 +31,6 @@ export default async function matchDetails(_matches) {
         return null;
     }
 
-
     for (let i = 0; i < _matches.length; i += 1) {
         console.log('matchesDetails: ', i, "/", _matches.length)
         try {          

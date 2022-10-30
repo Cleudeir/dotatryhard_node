@@ -8,7 +8,6 @@ import Db from '../../class/Db';
 export default async function matchHistory(accountId) {
     const time = Date.now();
     try {
-        console.log(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api2}`)
         const request = await fetch(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api2}`)
         const data = await request.json()
         if (data && data.result && data.result.matches) {
@@ -18,8 +17,8 @@ export default async function matchHistory(accountId) {
                 where: {
                     match_id: { [Op.or]: data.result.matches.map(x => x.match_id) },
                 },
-                raw:true
-            })).map(x=>x.match_id)
+                raw: true
+            })).map(x => x.match_id)
 
             const filteredArray = data.result.matches.filter(value => !findMatch.includes(value.match_id));
             if (filteredArray.length === 0) {
@@ -38,7 +37,7 @@ export default async function matchHistory(accountId) {
             });
             const matches = Array.from(matchesSingle).map(x => JSON.parse(x))
             const players = Array.from(playersSingle).map(x => JSON.parse(x))
-            console.log('matchHistory ',(-time + Date.now()) / 1000, 's');
+            console.log('matchHistory ', (-time + Date.now()) / 1000, 's');
             return { matches, players }
         }
         console.log('matchHistory-data', data)

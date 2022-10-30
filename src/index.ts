@@ -64,26 +64,32 @@ server.get('/add', async (req, res) => {
 })
 
 
-const findAndUpdate = new Revalidate("findAndUpdate", 4)
 const _ranking = new Revalidate("ranking", 4)
 
 let count: number = 0
+let inUse = false
 server.get('/ranking', async (req, res) => {
     const time = Date.now()
     const limit = req.query.limit as unknown as string
     console.log({ limit })
     const result = await _ranking.check(ranking, +limit)
-/*
-    if (count < 300) {
-        findAndUpdate.check(updateMatches, result[count].profile.account_id)
-        count++
-        setInterval(() => {
+
+    if (inUse === false) {
+        inUse = true
+        const updateData = async function () {
             const element = result[count];
             count++
-            findAndUpdate.check(updateMatches, element.profile.account_id)
-        }, 5 * 60 * 1000)
+            console.log('Busca automática do perfil: ', count, '/', result.length, element.profile.personaname)
+            await updateMatches(element.profile.account_id)
+            if (count > 300) {
+                inUse = false
+            } else {
+                updateData()
+            }
+        }
+        updateData()
     }
-    */
+
     console.log('time ranking', (Date.now() - time) / 1000, "s")
     return res.send(result)
 })
