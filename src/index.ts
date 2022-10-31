@@ -68,29 +68,30 @@ const _ranking = new Revalidate("ranking", 4)
 
 let count: number = 0
 let inUse = false
+
 server.get('/ranking', async (req, res) => {
     const time = Date.now()
     const limit = req.query.limit as unknown as string
     console.log({ limit })
     let result = await _ranking.check(ranking, +limit)
-
-    if (inUse === false) {
-        inUse = true
+    if (inUse === false) {        
         const updateData = async function () {
             const element = result[count];
-            count++
-            console.log('Busca automática do perfil: ', count, '/', result.length, element.profile.personaname)
-            await updateMatches(element.profile.account_id)
-            if (count < result.length-1) {                
-                updateData()
-            }else{
-                count = 0
-                inUse = false
-            }
-        }
-        updateData()
-    }
-
+            if(result && element){
+                inUse = true
+                count++
+                console.log('Busca automática do perfil: ', count, '/', result.length, element.profile.personaname)
+                await updateMatches(element.profile.account_id)
+                if (count < result.length-1) {                
+                    updateData()
+                } else {
+                    count = 0
+                    inUse = false
+                }
+            }           
+        }       
+    }    
     console.log('time ranking', (Date.now() - time) / 1000, "s")
     return res.send(result)
 })
+
