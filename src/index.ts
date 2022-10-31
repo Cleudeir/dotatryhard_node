@@ -72,7 +72,7 @@ server.get('/ranking', async (req, res) => {
     const time = Date.now()
     const limit = req.query.limit as unknown as string
     console.log({ limit })
-    const result = await _ranking.check(ranking, +limit)
+    let result = await _ranking.check(ranking, +limit)
 
     if (inUse === false) {
         inUse = true
@@ -81,9 +81,7 @@ server.get('/ranking', async (req, res) => {
             count++
             console.log('Busca automática do perfil: ', count, '/', result.length, element.profile.personaname)
             await updateMatches(element.profile.account_id)
-            if (count > 300) {
-                inUse = false
-            } else {
+            if (count < result.length-1) {                
                 updateData()
             }
         }
