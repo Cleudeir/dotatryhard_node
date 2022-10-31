@@ -83,6 +83,9 @@ server.get('/ranking', async (req, res) => {
             await updateMatches(element.profile.account_id)
             if (count < result.length-1) {                
                 updateData()
+            }else{
+                count = 0
+                inUse = false
             }
         }
         updateData()
