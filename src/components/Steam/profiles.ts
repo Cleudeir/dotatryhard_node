@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 dotenv.config();
 const SteamID = require('steamid');
 
-export default async function profiles(_players) {
+export default async function profiles(_players: any[]) {
   const time = Date.now();
   const players = [];
 
@@ -16,9 +16,9 @@ export default async function profiles(_players) {
       account_id: { [Op.or]: _players },
     }
   });
-  const findFilterPlayer = findPlayer.map(x => x.dataValues.account_id)
-  const filteredArray = _players.filter(value => !findFilterPlayer.includes(value));
-  if (filteredArray === 0) {
+  const findFilterPlayer = findPlayer.map((x: { dataValues: { account_id: any; }; }) => x.dataValues.account_id)
+  const filteredArray: any[] = _players.filter((value: any) => !findFilterPlayer.includes(value));
+  if (filteredArray.length === 0) {
     console.log('Profile: ',(-time + Date.now()) / 1000, 's');
     console.log(_players, filteredArray.length, 'Partidas já existem!')
     return null;
@@ -50,7 +50,7 @@ export default async function profiles(_players) {
           })
         }
       } catch (error) {
-        console.log('error Profile:', error.message);
+        console.log('error Profile:', error);
       }
     }
   }

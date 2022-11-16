@@ -10,11 +10,11 @@ import { heros } from '../lists/heros';
 const { Op } = require("sequelize");
 
 
-export default async function matchDetails(_matches) {
+export default async function matchDetails(_matches: any[]) {
     const time = Date.now();
     const matches = []
     const playerUnique = new Set();
-    const playersMatches = []
+    const playersMatches: any[] = []
 
     const findMatches = (await Db.playersMatches.findAll({
         attributes: ['match_id'],
@@ -25,8 +25,8 @@ export default async function matchDetails(_matches) {
         raw: true
     }))
 
-    const filteredArray = _matches.filter(value => !findMatches.includes(value));
-    if (filteredArray === 0) {
+    const filteredArray = _matches.filter((value: any) => !findMatches.includes(value));
+    if (filteredArray.length === 0) {
         console.log('match_id: ', (-time + Date.now()) / 1000, 's');
         return null;
     }
@@ -52,7 +52,7 @@ export default async function matchDetails(_matches) {
                     duration: res.duration,
                 })
 
-                data.result.players.map(_player => {
+                data.result.players.map((_player: { account_id: string | number; player_slot: string | number; ability_upgrades: any[]; assists: any; deaths: any; denies: any; gold_per_min: any; hero_damage: any; hero_healing: any; kills: any; last_hits: any; net_worth: any; tower_damage: any; xp_per_min: any; level: any; team_number: string | number; leaver_status: any; aghanims_scepter: any; aghanims_shard: any; backpack_0: any; backpack_1: any; backpack_2: any; item_0: any; item_1: any; item_2: any; item_3: any; item_4: any; item_5: any; item_neutral: any; moonshard: any; hero_id: string | number; }) => {
                     const uniqueAbility = new Set();
 
                     playerUnique.add(JSON.stringify({
@@ -61,7 +61,7 @@ export default async function matchDetails(_matches) {
                     },
                     ))
                     if (_player.ability_upgrades) {
-                        _player.ability_upgrades.map(x => uniqueAbility.add(x.ability))
+                        _player.ability_upgrades.map((x: { ability: unknown; }) => uniqueAbility.add(x.ability))
                     }
 
 
@@ -123,7 +123,7 @@ export default async function matchDetails(_matches) {
 
     const promisePlayers = await Promise.all(playerUnique);
 
-    [...promisePlayers].map(x => {
+    [...promisePlayers].map((x : any) => {
         const item = JSON.parse(x);
         Db.player.update({ loccountrycode: item.loccountrycode },
             {

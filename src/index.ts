@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 import server from './class/Server';
 import playerHistory from './components/routes/playerHistory';
 import ranking from './components/routes/ranking';
@@ -75,7 +74,7 @@ server.get('/ranking', async (req, res) => {
     console.log({ limit })
     let result = await _ranking.check(ranking, +limit)
     if (inUse === false) {        
-        const updateData = async function () {
+        const updateData : any = async function () {
             const element = result[count];
             if(result && element){
                 inUse = true
@@ -89,7 +88,8 @@ server.get('/ranking', async (req, res) => {
                     inUse = false
                 }
             }           
-        }       
+        }   
+        updateData()    
     }    
     console.log('time ranking', (Date.now() - time) / 1000, "s")
     return res.send(result)

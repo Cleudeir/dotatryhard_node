@@ -94,8 +94,6 @@ export default async function playerHistory({ account_id, limit }: obj): Promise
     }))
 
     const result = rankingRate(avg,avgGlobal)
-    console.log(result)
-
     return { matches, avg: result }
 }
 
