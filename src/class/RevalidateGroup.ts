@@ -26,7 +26,6 @@ export default class RevalidateGroup {
 				time: Date.now()
 			}
 			this.data = [obj]
-			console.log("Revalidate start")
 		}
 		if (result && result.data && (timeNow - result.time) > this.revalidateTime) {
 			const exists: obj[] = this.data.filter(x => x.account_id !== account_id)
@@ -37,7 +36,6 @@ export default class RevalidateGroup {
 				time: Date.now()
 			}
 			this.data = [...exists, obj]
-			console.log("Revalidate start")
 		}
 		if (result) {
 			console.log("Revalidate ", (timeNow - result.time) / 1000, '/', this.revalidateTime / 1000,'s')

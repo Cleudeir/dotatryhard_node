@@ -15,13 +15,18 @@ export default async function upDateProfiles(accountId: number) {
       const data = await request.json()
       if (data && data.response && data.response.players && data.response.players.length > 0) {
         const x = data.response.players[0];
-        infoPlayer = { ...x, account_id: accountId }
+        infoPlayer = {
+          account_id: accountId,
+          personaname: x.personaname,
+          avatarfull: x.avatarfull,
+          loccountrycode: x.loccountrycode
+        }
       } else {
         infoPlayer = {
           account_id: accountId,
           personaname: 'unknown',
           avatarfull: 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/',
-          loccountrycode: '',
+          loccountrycode: 'unknown'
         }
       }
       await Db.player.update(infoPlayer, {

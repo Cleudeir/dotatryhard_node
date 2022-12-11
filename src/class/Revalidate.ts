@@ -21,7 +21,6 @@ export default class Revalidate {
 		this.count += 1
 		if (this.count === 1) {
 			this.data = await _function(params);			
-			console.log("Revalidate start")
 		}
 
 		this.count += 1

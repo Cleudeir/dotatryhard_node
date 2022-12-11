@@ -21,7 +21,6 @@ server.get('/player', async (req, res) => {
 
     const account_id = req.query.account_id as unknown as number
     const limit = req.query.limit as unknown as number
-    console.log(account_id)
     if (+account_id === undefined) {
         return res.send({ account_id: 'undefined' })
     }
@@ -63,7 +62,7 @@ server.get('/add', async (req, res) => {
 })
 
 
-const _ranking = new Revalidate("ranking", 4)
+const _ranking = new Revalidate("ranking", 60)
 
 let count: number = 0
 let inUse = false
@@ -71,7 +70,7 @@ let data = Date.now()
 server.get('/ranking', async (req, res) => {
     const time = Date.now()
     const limit = req.query.limit as unknown as string
-    console.log({ limit })
+    console.log({ limit , logTime: Date.now() - data})
     let result = await _ranking.check(ranking, +limit)
     if(Date.now() - data > 1000*60*60*24 ){ 
         count = 0

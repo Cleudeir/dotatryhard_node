@@ -1,4 +1,4 @@
-const regions = function (id) {
+const regions = function (id: number) {
     const region = {
         1: 'NORTH AMERICA',
         2: 'NORTH AMERICA',
@@ -99,7 +99,6 @@ const regions = function (id) {
     };
     let result = '';
     if (!id) {
-        console.log("Region: ", id)
         result = 'SOUTH AMERICA'
         return result;
     }

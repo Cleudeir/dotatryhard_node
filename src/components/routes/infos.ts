@@ -38,8 +38,6 @@ export default async function infos({ account_id, limit }: obj): Promise<obj> {
                 (y: { match_id: number; }) => y.match_id === item.match_id)
         }
     ))
-
-    console.log('matches', matches.length, account_id);
     const playersAlliesTeamGame: { profile: any; win: any; }[] = [];
     const playersEnemyTeamGame: { profile: any; win: any; }[] = [];
     const uniqueAlliesPlayers = new Set();

@@ -19,8 +19,8 @@ export default async function profiles(_players: any[]) {
   const findFilterPlayer = findPlayer.map((x: { dataValues: { account_id: any; }; }) => x.dataValues.account_id)
   const filteredArray: any[] = _players.filter((value: any) => !findFilterPlayer.includes(value));
   if (filteredArray.length === 0) {
-    console.log('Profile: ',(-time + Date.now()) / 1000, 's');
-    console.log(_players, filteredArray.length, 'Partidas já existem!')
+    console.log('Profile: ', (-time + Date.now()) / 1000, 's');
+    console.log(filteredArray.length, 'Partidas já existem!')
     return null;
   }
   for (let i = 0; i < filteredArray.length; i += 1) {
@@ -32,7 +32,7 @@ export default async function profiles(_players: any[]) {
         account_id: accountId,
         personaname: 'unknown',
         avatarfull: 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/',
-        loccountrycode: '',
+        loccountrycode: 'unknown',
       })
     } else {
       try {
@@ -46,7 +46,7 @@ export default async function profiles(_players: any[]) {
             account_id: accountId,
             personaname: 'unknown',
             avatarfull: 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/',
-            loccountrycode: '',
+            loccountrycode: 'unknown',
           })
         }
       } catch (error) {
@@ -56,6 +56,6 @@ export default async function profiles(_players: any[]) {
   }
   const promisePlayer = await Promise.all(players);
   await Db.player.bulkCreate(promisePlayer, { ignoreDuplicates: true, updateOnDuplicate: ["account_id"], logging: false })
-  console.log('Profile: ',(-time + Date.now()) / 1000, 's');
+  console.log('Profile: ', (-time + Date.now()) / 1000, 's');
   return { player: promisePlayer };
 }

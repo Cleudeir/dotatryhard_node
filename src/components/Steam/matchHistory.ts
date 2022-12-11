@@ -22,8 +22,7 @@ export default async function matchHistory(accountId: any) {
 
             const filteredArray = data.result.matches.filter((value: { match_id: any; }) => !findMatch.includes(value.match_id));
             if (filteredArray.length === 0) {
-                console.log((-time + Date.now()) / 1000, 's');
-                console.log(filteredArray, 'Partidas já existem!')
+                console.log('Partidas já existem!', (-time + Date.now()) / 1000, 's');
                 return null;
             }
             const matchesSingle = new Set();
@@ -35,12 +34,11 @@ export default async function matchHistory(accountId: any) {
                 },
                 );
             });
-            const matches: any[] = Array.from(matchesSingle).map((x : any) => JSON.parse(x))
-            const players: any[] = Array.from(playersSingle).map((x : any) => JSON.parse(x))
+            const matches: any[] = Array.from(matchesSingle).map((x: any) => JSON.parse(x))
+            const players: any[] = Array.from(playersSingle).map((x: any) => JSON.parse(x))
             console.log('matchHistory ', (-time + Date.now()) / 1000, 's');
             return { matches, players }
         }
-        console.log('matchHistory-data', data)
         return null;
     } catch (error) {
         console.log('matchHistory-error', error)

@@ -5,7 +5,6 @@ import upDateProfiles from "./upDateProfiles";
 
 
 async function start(account_id: number) {
-    console.log("-----------------------------")
     const history = await matchHistory(account_id)
     await upDateProfiles(account_id)
     if (history) {

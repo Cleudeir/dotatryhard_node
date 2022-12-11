@@ -9,9 +9,9 @@ type obj = {
 };
 export default async function ranking(limit?: number): Promise<obj> {
     if (!limit) {
-        limit = 10000
+        limit = 500
     }
-    const avgPlayer = (await Db.playersMatches.findAll({
+    const avgPlayer: obj = (await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
             [sequelize.fn('avg', sequelize.col('deaths')), 'deaths'],
@@ -39,7 +39,7 @@ export default async function ranking(limit?: number): Promise<obj> {
         where: {
             account_id: { [Op.gte]: 150 }
         },
-        limit: limit,
+        limit,
     })).map((x: { dataValues: any; }) => x.dataValues)
 
     const [avgGlobal] = (await Db.playersMatches.findAll({
