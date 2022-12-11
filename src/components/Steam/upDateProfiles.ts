@@ -1,6 +1,7 @@
 import Db from '../../class/Db';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
+import regions from '../lists/regions';
 dotenv.config();
 const SteamID = require('steamid');
 
@@ -19,7 +20,7 @@ export default async function upDateProfiles(accountId: number) {
           account_id: accountId,
           personaname: x.personaname,
           avatarfull: x.avatarfull,
-          loccountrycode: x.loccountrycode
+          loccountrycode: regions(+x.loccountrycode),
         }
       } else {
         infoPlayer = {

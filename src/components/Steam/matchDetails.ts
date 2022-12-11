@@ -33,14 +33,14 @@ export default async function matchDetails(_matches: any[]) {
 
     for (let i = 0; i < _matches.length; i += 1) {
         console.log('matchesDetails: ', i, "/", _matches.length)
-        try {          
+        try {
             const request = await fetch(`${process.env.base_url}/IDOTA2Match_570/GetMatchDetails/v1?match_id=${_matches[i]}&key=${process.env.key_api}`)
             const data = await request.json()
 
             if (data && data.result) {
                 const res = data.result
-                if(res.game_mode !== 18){
-                    console.log('game_mode: ',res.game_mode)
+                if (res.game_mode !== 18) {
+                    console.log('game_mode: ', res.game_mode)
                     continue
                 }
                 matches.push({
@@ -123,7 +123,7 @@ export default async function matchDetails(_matches: any[]) {
 
     const promisePlayers = await Promise.all(playerUnique);
 
-    [...promisePlayers].map((x : any) => {
+    [...promisePlayers].map((x: any) => {
         const item = JSON.parse(x);
         Db.player.update({ loccountrycode: item.loccountrycode },
             {

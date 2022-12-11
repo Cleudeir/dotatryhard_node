@@ -4,7 +4,7 @@ type obj = {
 
 export default function rankingRate(avg: obj, avgGlobal: obj): obj {
 
-    function roundNumber(x: number): number {      
+    function roundNumber(x: number): number {
         return Math.floor((x * 10)) / 10
     }
 
@@ -36,9 +36,9 @@ export default function rankingRate(avg: obj, avgGlobal: obj): obj {
             + (+avg.net_worth / +avgGlobal.net_worth) * 0.5
             + (+avg.tower_damage / +avgGlobal.tower_damage) * 2
             + (+avg.xp_per_min / +avgGlobal.xp_per_min) * 1
-            + ((avg.win / avg.matches) / 0.5) * 3
+            + ((avg.win / avg.matches) / 0.5) * 5
         )
-            / (1 * 4 + 0.5 * 6 + 1 * 2 + 1 * 3)
+            / (1 * 4 + 0.5 * 6 + 1 * 2 + 1 * 5)
         ) * 3000),
         profile: avg.profile
     }

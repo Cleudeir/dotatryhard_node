@@ -20,7 +20,10 @@ export default class Revalidate {
 	async check(_function: Function, params: any): Promise<obj> {
 		this.count += 1
 		if (this.count === 1) {
-			this.data = await _function(params);			
+			this.data = await _function(params);
+			if (this.data && 0 === this.data.length) {
+				this.data = await _function(params)
+			}
 		}
 
 		this.count += 1

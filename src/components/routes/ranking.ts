@@ -11,6 +11,7 @@ export default async function ranking(limit?: number): Promise<obj> {
     if (!limit) {
         limit = 500
     }
+    let time = Date.now()
     const avgPlayer: obj = (await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -41,7 +42,10 @@ export default async function ranking(limit?: number): Promise<obj> {
         },
         limit,
     })).map((x: { dataValues: any; }) => x.dataValues)
-
+    //time
+    console.log('1 passed', (Date.now() - time) / 1000, "s")
+    time = Date.now()
+    //--
     const [avgGlobal] = (await Db.playersMatches.findAll({
         attributes: [
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -64,7 +68,10 @@ export default async function ranking(limit?: number): Promise<obj> {
         },
         logging: false,
     })).map((x: { dataValues: any; }) => x.dataValues)
-
+    //time
+    console.log('2 passed', (Date.now() - time) / 1000, "s")
+    time = Date.now()
+    //--
     const result = avgPlayer.map((avg: obj) => (rankingRate(avg, avgGlobal)))
     const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
         if (a.rankingRate > b.rankingRate)
@@ -74,6 +81,9 @@ export default async function ranking(limit?: number): Promise<obj> {
         return 0;
     })
     const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i + 1) }))
-
+    //time
+    console.log('3 passed', (Date.now() - time) / 1000, "s")
+    time = Date.now()
+    //--
     return resultIds
 }
