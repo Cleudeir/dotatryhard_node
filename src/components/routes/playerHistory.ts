@@ -10,7 +10,7 @@ type obj = {
 };
 export default async function playerHistory({ account_id, limit }: obj): Promise<obj> {
     if (!limit) {
-        limit = 500
+        limit = 50
     }
 
     const findMatchesIds = (await Db.playersMatches.findAll({
@@ -93,7 +93,7 @@ export default async function playerHistory({ account_id, limit }: obj): Promise
         raw: true
     }))
 
-    const result = rankingRate(avg,avgGlobal)
+    const result = rankingRate(avg, avgGlobal)
     return { matches, avg: result }
 }
 

@@ -41,7 +41,7 @@ export default async function matchHistory(accountId: any) {
         }
         return null;
     } catch (error) {
-        console.log('matchHistory-error', error)
+        console.log('<<<<<< matchHistory-error >>>>>>>')
         return null;
     }
 }

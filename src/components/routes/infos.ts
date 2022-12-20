@@ -6,7 +6,7 @@ type obj = {
 };
 export default async function infos({ account_id, limit }: obj): Promise<obj> {
     if (!limit) {
-        limit = 500
+        limit = 300
     }
 
     const findMatchesIds = (await Db.playersMatches.findAll({
@@ -44,7 +44,7 @@ export default async function infos({ account_id, limit }: obj): Promise<obj> {
     const uniqueEnemyPlayers = new Set();
     let person = undefined
     matches.map((item: { players: { filter: (arg0: (x: any) => boolean) => [{ player_slot: any; win: any; profile: any }]; map: (arg0: (x: any) => void) => void; }; }) => {
-        const [{ player_slot, win,  profile }] = item.players.filter((x) => x.account_id === account_id);
+        const [{ player_slot, win, profile }] = item.players.filter((x) => x.account_id === account_id);
         person = profile
         item.players.map((x) => {
             if (x.account_id > 150 && x.account_id !== account_id && x.player_slot > 100 && player_slot > 100) {
@@ -63,13 +63,13 @@ export default async function infos({ account_id, limit }: obj): Promise<obj> {
             if (x.account_id > 150 && x.account_id !== account_id && x.player_slot < 100 && player_slot > 100) {
                 playersEnemyTeamGame.push({
                     profile: x.profile,
-                    win: win===0 ? 1: 0,
+                    win: win === 0 ? 1 : 0,
                 });
                 uniqueEnemyPlayers.add(x.account_id);
             } else if (x.account_id > 150 && x.account_id !== account_id && x.player_slot > 100 && player_slot < 100) {
                 playersEnemyTeamGame.push({
                     profile: x.profile,
-                    win: win===0 ? 1: 0,
+                    win: win === 0 ? 1 : 0,
                 });
                 uniqueEnemyPlayers.add(x.account_id);
             }

@@ -9,7 +9,7 @@ type obj = {
 };
 export default async function ranking(limit?: number): Promise<obj> {
     if (!limit) {
-        limit = 500
+        limit = 400
     }
     let time = Date.now()
     const avgPlayer: obj = (await Db.playersMatches.findAll({
@@ -43,7 +43,7 @@ export default async function ranking(limit?: number): Promise<obj> {
         limit,
     })).map((x: { dataValues: any; }) => x.dataValues)
     //time
-    console.log('1 passed', (Date.now() - time) / 1000, "s")
+    console.log('ranking geration 33%', (Date.now() - time) / 1000, "s")
     time = Date.now()
     //--
     const [avgGlobal] = (await Db.playersMatches.findAll({
@@ -69,7 +69,7 @@ export default async function ranking(limit?: number): Promise<obj> {
         logging: false,
     })).map((x: { dataValues: any; }) => x.dataValues)
     //time
-    console.log('2 passed', (Date.now() - time) / 1000, "s")
+    console.log('ranking geration 66%', (Date.now() - time) / 1000, "s")
     time = Date.now()
     //--
     const result = avgPlayer.map((avg: obj) => (rankingRate(avg, avgGlobal)))
@@ -82,7 +82,7 @@ export default async function ranking(limit?: number): Promise<obj> {
     })
     const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i + 1) }))
     //time
-    console.log('3 passed', (Date.now() - time) / 1000, "s")
+    console.log('ranking geration 99%', (Date.now() - time) / 1000, "s")
     time = Date.now()
     //--
     return resultIds
