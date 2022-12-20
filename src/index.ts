@@ -13,9 +13,9 @@ type obj = {
 };
 
 
-
-const update = new Revalidate("update", 1)
-const _playerHistory = new RevalidateGroup("playerHistory", 60)
+const timeUpdate: number = 24 * 60 * 60
+const update = new Revalidate("update", timeUpdate)
+const _playerHistory = new RevalidateGroup("playerHistory", timeUpdate)
 server.get('/player', async (req, res) => {
     const time = Date.now()
 
@@ -30,7 +30,7 @@ server.get('/player', async (req, res) => {
     console.log('time player', (Date.now() - time) / 1000, "s")
     return res.send(result)
 })
-const _infos = new RevalidateGroup("infos", 60)
+const _infos = new RevalidateGroup("infos", timeUpdate)
 server.get('/infos', async (req, res) => {
     const time = Date.now()
 
@@ -62,36 +62,43 @@ server.get('/add', async (req, res) => {
 })
 
 
-const _ranking = new Revalidate("ranking", 60)
+const _ranking = new Revalidate("ranking", timeUpdate)
 
 let count: number = 0
 let inUse = false
 let data = Date.now()
 server.get('/ranking', async (req, res) => {
-    const time = Date.now()
+    let time = Date.now()
     const limit = req.query.limit as unknown as string
-    console.log({ limit , logTime: Date.now() - data})
+    console.log({ limit, logTime: Date.now() - data })
     let result = await _ranking.check(ranking, +limit)
-    if(Date.now() - data > 1000*60*60*24 ){ 
+    if (Date.now() - data > 1000 * 60 * 60 * 24) {
         count = 0
         inUse = false
         data = Date.now()
     }
-    if (inUse === false) {        
-        const updateData : any = async function () {
+    if (inUse === false) {
+        const updateData: any = async function () {
             const element = result[count];
-            if(result && element){
+            if (result && element) {
                 inUse = true
                 count++
                 console.log('Busca automática do perfil: ', count, '/', result.length, element.profile.personaname)
-                await updateMatches(element.profile.account_id)
-                if (count < result.length-1) {                
+                const account_id = element.profile.account_id
+                console.log('step 01')
+                await updateMatches(account_id)
+                console.log('step 02')
+                await _infos.check(account_id, infos, { account_id, limit })
+                console.log('step 03')
+                await _playerHistory.check(account_id, playerHistory, { account_id, limit })
+                console.log('------------------')
+                if (count < result.length - 1) {
                     updateData()
-                } 
-            }           
-        }   
-        updateData()    
-    }    
+                }
+            }
+        }
+        updateData()
+    }
     console.log('time ranking', (Date.now() - time) / 1000, "s")
     return res.send(result)
 })
