@@ -15,7 +15,7 @@ export default async function infos({ account_id, limit }: { account_id: number,
         logging: false,
         attributes: ['match_id', 'account_id', 'player_slot', 'win'],
         where: {
-            match_id: { [Op.or]: _matchIds }
+            match_id: { [Op.or]: _matchIds.map(item => item.match_id) }
         },
         include: [{
             model: Db.player,

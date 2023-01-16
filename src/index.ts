@@ -7,9 +7,9 @@ import infos from './infos';
 import avgGlobal from './components/query/avgGlobal';
 dotenv.config();
 
+const avgGlobalCache = new Revalidate('avgGlobal', 24 * 60)
+const _avgGlobal = avgGlobalCache.check(avgGlobal)
 let playerInUse = false
-const _avgGlobal = avgGlobal().then(data => { console.log(data); return data })
-
 server.get('/player', async (req, res) => {
     if (!playerInUse && await _avgGlobal) {
         playerInUse = true

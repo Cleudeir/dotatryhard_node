@@ -6,9 +6,13 @@ export default async function matchIds({ account_id, limit }: { account_id: numb
         where: {
             account_id
         },
+        include: [{
+            model: Db.match,
+            as: 'match',
+        }],
         order: [['match_id', 'DESC']],
-        limit: limit
+        limit: limit,
     })
-    const _matchIds = queryMatchIds.map((x: any) => x.match_id)
-    return _matchIds
+    const match = [...queryMatchIds].map(item => item.match)
+    return match
 }

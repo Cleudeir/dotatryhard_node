@@ -11,13 +11,12 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
     if (!limit) {
         limit = 20
     }
-
     const _matchIds = await matchIds({ account_id, limit })
-
+    // return _matchIds
     const findMatchesInfo: obj = await Db.playersMatches.findAll({
         logging: false,
         where: {
-            match_id: { [Op.or]: _matchIds }
+            match_id: { [Op.or]: _matchIds.map(item => item.match_id) }
         },
         include: [{
             model: Db.player,
@@ -25,15 +24,22 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
             attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
         }]
     })
-
     const data: obj = []
-    _matchIds.forEach((item: number) => data.push(
-        {
-            match_id: item,
-            players: findMatchesInfo.filter(
-                (y: any) => y.match_id === item)
-        }
-    ))
+    _matchIds.forEach((item: any) => {
+        data.push(
+            {
+                match_id: item.match_id,
+                start_time: item.start_time,
+                cluster: item.cluster,
+                dire_score: item.dire_score,
+                radiant_score: item.radiant_score,
+                duration: item.duration,
+                players: findMatchesInfo.filter(
+                    (y: any) => y.match_id === item.match_id)
+            }
+        )
+    }
+    )
     const [_avg] = (await Db.playersMatches.findAll({
         attributes: [
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
