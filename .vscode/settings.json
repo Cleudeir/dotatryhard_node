@@ -1,14 +1,20 @@
 {
-    "cSpell.words": [
-        "aghanims",
-        "avatarfull",
-        "IDOTA",
-        "loccountrycode",
-        "mariadb",
-        "moonshard",
-        "personaname",
-        "steamid",
-        "steamids",
-        "TINYINT"
-    ]
+  "cSpell.words": [
+    "aghanims",
+    "avatarfull",
+    "IDOTA",
+    "Informações",
+    "loccountrycode",
+    "mariadb",
+    "moonshard",
+    "partidas",
+    "percentual",
+    "personaname",
+    "sobre",
+    "steamid",
+    "steamids",
+    "TINYINT",
+    "utimas",
+    "vitória"
+  ]
 }
