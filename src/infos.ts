@@ -10,12 +10,21 @@ export default async function infos({ account_id, limit }: { account_id: number,
         limit = 500
     }
 
-    const _matchIds = await matchIds({ account_id, limit })
+    const queryMatchIds = await Db.playersMatches.findAll({
+        attributes: ['match_id'],
+        logging: false,
+        where: {
+            account_id
+        },
+        order: [['match_id', 'DESC']],
+        limit: limit,
+    })
+    const _matchIds = [...queryMatchIds].map(item => item.match)
     const playersMatches: obj = await Db.playersMatches.findAll({
         logging: false,
         attributes: ['match_id', 'account_id', 'player_slot', 'win'],
         where: {
-            match_id: { [Op.or]: _matchIds.map(item => item.match_id) }
+            match_id: { [Op.or]: _matchIds }
         },
         include: [{
             model: Db.player,
