@@ -7,7 +7,7 @@ type obj = {
 };
 export default async function infos({ account_id, limit }: { account_id: number, limit: number }): Promise<obj> {
     if (!limit) {
-        limit = 700
+        limit = 500
     }
 
     const _matchIds = await matchIds({ account_id, limit })
