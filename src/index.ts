@@ -21,11 +21,9 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
         const result = await player({ account_id, limit, _avgGlobal })
         console.log('Informações sobre utimas partidas', (Date.now() - time) / 1000, "s")
-
+        start(account_id)
         return res.send(result)
-
     })
-
 
     server.get('/infos', async (req, res) => {
 
@@ -37,40 +35,20 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         if (+account_id === undefined) {
             return res.send({ account_id: 'undefined' })
         }
-
+        start(account_id)
         const result = await _infos.check(infos, { account_id, limit })
         console.log('Informações percentual de vitória!', (Date.now() - time) / 1000, "s")
-
-        return res.send(result)
-
-    })
-
-
-    server.get('/add', async (req, res) => {
-
-        const time = Date.now()
-        const account_id = Number(req.query.account_id) as unknown as number
-        const limit = Number(req.query.limit) as unknown as number
-        if (+account_id === undefined) {
-            return res.send({ account_id: 'undefined' })
-        }
-        const result = await player({ account_id, limit, _avgGlobal })
-        console.log('time add', (Date.now() - time) / 1000, "s")
-
         return res.send(result)
 
     })
 
     const _ranking = new Revalidate('ranking', 24 * 60)
     server.get('/ranking', async (req, res) => {
-
         let time = Date.now()
         const limit = Number(req.query.limit) as unknown as number
         console.log({ limit })
         let result = await _ranking.check(ranking, { limit, _avgGlobal })
-
         console.log('time ranking', (Date.now() - time) / 1000, "s")
-
         return res.send(result)
     });
 
@@ -86,7 +64,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
             const account_id: number = Number(result[count].profile.account_id)
             limit = 1000
             const _infos: any = new Revalidate('infos_' + account_id, 18 * 60 + Math.floor(Math.random() * 6))
-            console.log({ account_id, limit })
+            console.log({ count, account_id, limit })
             await start(account_id)
             await _infos.check(infos, { account_id, limit })
             if (count < result.length) {
