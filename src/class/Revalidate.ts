@@ -25,10 +25,9 @@ export default class Revalidate {
 			return data
 		}
 	}
-	async check(_function: Function, params: any): Promise<obj> {
+	async check(_function: Function, params?: any): Promise<obj> {
 		const timeNow = Date.now();
 		let data = await this.read() as unknown as any[]
-		console.log('data: ', data);
 		if (data.length === 0) {
 			console.log(">>>> Revalidate single start <<<<")
 			data = await _function(params);
@@ -36,9 +35,10 @@ export default class Revalidate {
 		}
 		console.log("Revalidate ", this.name, ((timeNow - this.timeStart) / 1000 / 60).toFixed(2), '/', this.revalidateTime / 1000 / 60, 'min')
 		if ((timeNow - this.timeStart) > this.revalidateTime) {
-			data = await _function(params);
-			fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(data));
-			this.timeStart = Date.now();
+			_function(params).then(_data => {
+				fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(_data));
+				this.timeStart = Date.now();
+			})
 		}
 		return data
 	}

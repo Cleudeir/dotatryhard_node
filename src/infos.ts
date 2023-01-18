@@ -1,6 +1,5 @@
 import Db from './class/Db';
 import { Op } from "sequelize";
-import matchIds from './components/query/matchIds';
 
 type obj = {
     [key: string]: any;
@@ -18,8 +17,10 @@ export default async function infos({ account_id, limit }: { account_id: number,
         },
         order: [['match_id', 'DESC']],
         limit: limit,
+        raw: true
     })
-    const _matchIds = [...queryMatchIds].map(item => item.match)
+    const _matchIds = queryMatchIds.map((item: any) => item.match_id)
+    console.log('_matchIds: ', _matchIds);
     const playersMatches: obj = await Db.playersMatches.findAll({
         logging: false,
         attributes: ['match_id', 'account_id', 'player_slot', 'win'],

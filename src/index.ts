@@ -5,49 +5,49 @@ import Revalidate from './class/Revalidate'
 import dotenv from 'dotenv';
 import infos from './infos';
 import avgGlobal from './components/query/avgGlobal';
+import start from './components/Steam/_index';
 dotenv.config();
 
-const avgGlobalCache = new Revalidate('avgGlobal', 24 * 60)
-const _avgGlobal = avgGlobalCache.check(avgGlobal)
-let playerInUse = false
-server.get('/player', async (req, res) => {
-    if (!playerInUse && await _avgGlobal) {
-        playerInUse = true
+const avgGlobalCache = new Revalidate('avgGlobal', 7 * 24 * 60)
+avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
+
+    server.get('/player', async (req, res) => {
         const time = Date.now()
         const account_id = Number(req.query.account_id) as unknown as number
         const limit = Number(req.query.limit) as unknown as number
         if (+account_id === undefined) {
             return res.send({ account_id: 'undefined' })
         }
+
         const result = await player({ account_id, limit, _avgGlobal })
         console.log('Informações sobre utimas partidas', (Date.now() - time) / 1000, "s")
-        playerInUse = false
-        return res.send(result)
-    }
-})
 
-let infoInUse = false
-server.get('/infos', async (req, res) => {
-    if (!infoInUse) {
-        infoInUse = true
+        return res.send(result)
+
+    })
+
+
+    server.get('/infos', async (req, res) => {
+
         const time = Date.now()
         const account_id = Number(req.query.account_id) as unknown as number
         const limit = Number(req.query.limit) as unknown as number
+        const _infos = new Revalidate('infos_' + account_id, 18 * 60 + Math.floor(Math.random() * 6))
         console.log({ account_id, limit })
         if (+account_id === undefined) {
             return res.send({ account_id: 'undefined' })
         }
-        const result = await infos({ account_id, limit })
-        console.log('Informações percentual de vitória!', (Date.now() - time) / 1000, "s")
-        infoInUse = false
-        return res.send(result)
-    }
-})
 
-let addInUse = false
-server.get('/add', async (req, res) => {
-    if (!addInUse && await _avgGlobal) {
-        addInUse = true
+        const result = await _infos.check(infos, { account_id, limit })
+        console.log('Informações percentual de vitória!', (Date.now() - time) / 1000, "s")
+
+        return res.send(result)
+
+    })
+
+
+    server.get('/add', async (req, res) => {
+
         const time = Date.now()
         const account_id = Number(req.query.account_id) as unknown as number
         const limit = Number(req.query.limit) as unknown as number
@@ -56,23 +56,46 @@ server.get('/add', async (req, res) => {
         }
         const result = await player({ account_id, limit, _avgGlobal })
         console.log('time add', (Date.now() - time) / 1000, "s")
-        addInUse = false
-        return res.send(result)
-    }
-})
-const _ranking = new Revalidate('ranking', 24 * 60)
 
-let rankingInUse = false
-server.get('/ranking', async (req, res) => {
-    if (!rankingInUse && await _avgGlobal) {
-        rankingInUse = true
+        return res.send(result)
+
+    })
+
+    const _ranking = new Revalidate('ranking', 24 * 60)
+    server.get('/ranking', async (req, res) => {
+
         let time = Date.now()
         const limit = Number(req.query.limit) as unknown as number
         console.log({ limit })
         let result = await _ranking.check(ranking, { limit, _avgGlobal })
-        console.log('time ranking', (Date.now() - time) / 1000, "s")
-        rankingInUse = false
-        return res.send(result)
-    }
-})
 
+        console.log('time ranking', (Date.now() - time) / 1000, "s")
+
+        return res.send(result)
+    });
+
+    function sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    (async () => {
+        let limit = 1000
+        const result: any = await _ranking.check(ranking, { limit, _avgGlobal })
+        let count = 0
+        async function createCacheInfos() {
+            const account_id: number = Number(result[count].profile.account_id)
+            limit = 1000
+            const _infos: any = new Revalidate('infos_' + account_id, 18 * 60 + Math.floor(Math.random() * 6))
+            console.log({ account_id, limit })
+            await start(account_id)
+            await _infos.check(infos, { account_id, limit })
+            if (count < result.length) {
+                await sleep(60 * 1000)
+                createCacheInfos()
+                count += 1
+            }
+        }
+        createCacheInfos()
+    })()
+
+})

@@ -40,7 +40,7 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
         )
     }
     )
-    const [_avg] = (await Db.playersMatches.findAll({
+    const [avg] = (await Db.playersMatches.findAll({
         attributes: [
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
             [sequelize.fn('avg', sequelize.col('deaths')), 'deaths'],
@@ -67,7 +67,7 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
         logging: false,
     })).map((x: { dataValues: any; }) => x.dataValues)
 
-    const avg = rankingRate(_avg, _avgGlobal)
-    return { matches: data, avg }
+    const _avg = rankingRate({ avg, _avgGlobal })
+    return { matches: data, avg: _avg }
 }
 
