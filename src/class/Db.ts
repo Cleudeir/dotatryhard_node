@@ -9,7 +9,7 @@ type obj = {
 class Db {
     private sequelize: any
     public player: any
-    public match:any
+    public match: any
     public playersMatches: any
     private sync: any
 
@@ -101,12 +101,12 @@ class Db {
         this.match.hasMany(this.playersMatches, {
             foreignKey: 'match_id',
         })
-        
+
         this.playersMatches.belongsTo(this.player, {
             foreignKey: 'account_id',
             as: 'profile'
         })
-       
+
         this.playersMatches.belongsTo(this.match, {
             foreignKey: 'match_id',
         })

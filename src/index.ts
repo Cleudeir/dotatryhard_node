@@ -59,21 +59,22 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     (async () => {
         let limit = 1000
         const result: any = await _ranking.check(ranking, { limit, _avgGlobal })
-        let count = 0
-        async function createCacheInfos() {
-            const account_id: number = Number(result[count].profile.account_id)
-            limit = 1000
-            const _infos: any = new Revalidate('infos_' + account_id, 23 * 60 + Math.floor(Math.random() * 1))
-            console.log({ count, account_id, limit })
-            await start(account_id)
-            await _infos.check(infos, { account_id, limit })
-            if (count < result.length) {
-                await sleep(60 * 1400)
-                createCacheInfos()
-                count += 1
+        if (result.length > 0) {
+            let count = 0
+            async function createCacheInfos() {
+                const account_id: number = Number(result[count].profile.account_id)
+                limit = 1000
+                const _infos: any = new Revalidate('infos_' + account_id, 23 * 60 + Math.floor(Math.random() * 1))
+                console.log({ count, account_id, limit })
+                await start(account_id)
+                await _infos.check(infos, { account_id, limit })
+                if (count < result.length) {
+                    await sleep(60 * 1400)
+                    createCacheInfos()
+                    count += 1
+                }
             }
+            createCacheInfos()
         }
-        createCacheInfos()
     })()
-
 })
