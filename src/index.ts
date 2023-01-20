@@ -10,7 +10,6 @@ dotenv.config();
 
 const avgGlobalCache = new Revalidate('avgGlobal', 7 * 24 * 60)
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
-
     server.get('/player', async (req, res) => {
         const time = Date.now()
         const account_id = Number(req.query.account_id) as unknown as number
@@ -18,7 +17,6 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         if (+account_id === undefined) {
             return res.send({ account_id: 'undefined' })
         }
-
         const result = await player({ account_id, limit, _avgGlobal })
         console.log('Informações sobre utimas partidas', (Date.now() - time) / 1000, "s")
         start(account_id)
@@ -42,7 +40,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
     })
 
-    const _ranking = new Revalidate('ranking', 24 * 60)
+    const _ranking = new Revalidate('ranking', 10)
     server.get('/ranking', async (req, res) => {
         let time = Date.now()
         const limit = Number(req.query.limit) as unknown as number
