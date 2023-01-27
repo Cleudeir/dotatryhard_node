@@ -45,9 +45,9 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         let time = Date.now()
         const limit = Number(req.query.limit) as unknown as number
         console.log({ limit })
-        let result = await _ranking.check(ranking, { limit, _avgGlobal })
+        let data = await _ranking.check(ranking, { limit, _avgGlobal })
         console.log('time ranking', (Date.now() - time) / 1000, "s")
-        return res.send(result)
+        return res.send({data, avgGlobal: _avgGlobal})
     });
 
     function sleep(ms: number) {
