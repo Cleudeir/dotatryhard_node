@@ -1,5 +1,0 @@
-class request {
-
-    public constructor() { }
-
-}
