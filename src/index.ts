@@ -8,7 +8,7 @@ import avgGlobal from './components/query/avgGlobal';
 import start from './components/Steam/_index';
 dotenv.config();
 
-const avgGlobalCache = new Revalidate('avgGlobal', 7 * 24 * 60)
+const avgGlobalCache = new Revalidate('avgGlobal', 30)
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     server.get('/player', async (req, res) => {
         const time = Date.now()
@@ -47,7 +47,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         console.log({ limit })
         let data = await _ranking.check(ranking, { limit, _avgGlobal })
         console.log('time ranking', (Date.now() - time) / 1000, "s")
-        return res.send({data, avgGlobal: _avgGlobal})
+        return res.send({ data, avgGlobal: _avgGlobal })
     });
 
     function sleep(ms: number) {
