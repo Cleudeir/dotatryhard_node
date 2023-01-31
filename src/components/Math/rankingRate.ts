@@ -12,11 +12,11 @@ export default function rankingRate({ avg, _avgGlobal }: { avg: any, _avgGlobal:
         deaths: 1,
         gold_per_min: 1,
         hero_damage: 1,
-        hero_healing: 0.2,
+        hero_healing: 1,
         net_worth: 1,
         tower_damage: 1,
         xp_per_min: 1,
-        winRate: 2,
+        winRate: 1,
         last_hits: 1,
     }
     let totalValue = 0;
