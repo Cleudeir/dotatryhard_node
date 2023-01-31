@@ -43,7 +43,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     return await start(accountId);
   });
 
-  const rankingCache = new Revalidate('ranking', 10);
+  const rankingCache = new Revalidate('ranking', 0);
   server.get('/ranking', async (req, res) => {
     const limit = Number(req.query.limit) || undefined;
     const data = await rankingCache.check(ranking, { limit, _avgGlobal });
@@ -73,7 +73,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
           createCacheInfos();
         }
       }
-            createCacheInfos()
-        }
-    })()
+      createCacheInfos()
+    }
+  })()
 })
