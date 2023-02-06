@@ -23,7 +23,6 @@ export default async function infos({ account_id, limit }: { account_id: number,
     console.log('_matchIds: ', _matchIds);
     const playersMatches: obj = await Db.playersMatches.findAll({
         logging: false,
-        attributes: ['match_id', 'account_id', 'player_slot', 'win'],
         where: {
             match_id: { [Op.or]: _matchIds }
         },

@@ -34,7 +34,8 @@ export default class Revalidate {
 			fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(data));
 		}
 		console.log("Revalidate ", this.name, ((timeNow - this.timeStart) / 1000 / 60).toFixed(2), '/', this.revalidateTime / 1000 / 60, 'min')
-		if ((timeNow - this.timeStart) > this.revalidateTime) {
+		if ((timeNow - this.timeStart) >= this.revalidateTime) {
+			console.log('update Data')
 			_function(params).then(_data => {
 				fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(_data));
 				this.timeStart = Date.now();

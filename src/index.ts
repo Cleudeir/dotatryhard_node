@@ -30,7 +30,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     const accountId = Number(req.query.account_id) || undefined;
     const limit = Number(req.query.limit) || undefined;
     const cacheKey = `infos_${accountId}`;
-    const cacheTTL = 18 * 60 + Math.floor(Math.random() * 6);
+    const cacheTTL = 23 * 60 + Math.floor(Math.random() * 1);
     const infosCache = new Revalidate(cacheKey, cacheTTL);
 
     if (accountId === undefined) {
