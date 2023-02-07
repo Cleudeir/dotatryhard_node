@@ -428,7 +428,7 @@ export const itens = function (id) {
         "1565": "recipe_gungir"
     }
     let result = ''
-    if (!id) {
+    if (id === null || id === undefined) {
         result = id
     }
     Object.keys(list).forEach((key) => {

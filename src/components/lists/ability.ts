@@ -2294,7 +2294,7 @@ export const ability = function (id) {
     "9999": "roshan_halloween_burn"
   }
   let result = ''
-  if (!id) {
+  if (id === null || id === undefined) {
     result = id
     return result;
   }
