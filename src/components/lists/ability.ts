@@ -2295,16 +2295,17 @@ export const ability = function (id) {
   }
   let result = ''
   if (!id) {
-    result =  "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
+    result = id
     return result;
-}
+  }
   Object.keys(list).forEach((key) => {
     if (+key === +id) {
-      result = `https://cdn.datdota.com/images/ability/${list[key]}.png`;
+      result = `${list[key]}`;
+      // `https://cdn.datdota.com/images/ability/${list[key]}.png`;
     }
   });
-  if(result ===''){
-    result =  "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
+  if (result === '') {
+    result = id
   }
   return result
 }

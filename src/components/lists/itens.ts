@@ -428,16 +428,17 @@ export const itens = function (id) {
         "1565": "recipe_gungir"
     }
     let result = ''
-    if(!id){
-        result = "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
-      }
+    if (!id) {
+        result = id
+    }
     Object.keys(list).forEach((key) => {
         if (+key === +id) {
-            result = `https://cdn.datdota.com/images/items/${list[key]}.png`;
+            result = list[key];
+            // `https://cdn.datdota.com/images/item/${list[key]}.png`;
         }
     });
-    if(result ===''){
-        result = "https://static.vecteezy.com/ti/vetor-gratis/t2/375499-ponto-de-interrogacaoial-icone-gr%C3%A1tis-vetor.jpg"
-      }
+    if (result === '') {
+        result = id
+    }
     return result
 }
