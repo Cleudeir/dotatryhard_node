@@ -501,14 +501,11 @@ export const ability = function (id) {
     return id;
   }
 
-  const filter = list.filter(x => x.id === id)
+  const filter = list.filter(x => +x.id === +id)
   if (filter && filter[0] && filter[0].url) {
     result = filter[0].url
-  }
-
-  if (result === '') {
+  } else {
     result = id
   }
-
   return result
 }
