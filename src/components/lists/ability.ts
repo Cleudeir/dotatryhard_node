@@ -1,3 +1,4 @@
+const noFound: any = []
 export const ability = function (id) {
   const list = [
     { url: "riki_backstab", id: 5144, name: "Cloak and Dagger" },
@@ -507,6 +508,8 @@ export const ability = function (id) {
     result = filter[0].url
   } else {
     result = id
+    noFound.push(id)
+    console.log(noFound)
   }
   return result
 }
