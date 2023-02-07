@@ -41,7 +41,7 @@ export default async function matchDetails(_matches: any[]) {
                 const res = data.result
                 if (res.game_mode !== 18) {
                     console.log('game_mode: ', res.game_mode)
-                    break
+                    continue
                 }
                 matches.push({
                     match_id: +res.match_id,

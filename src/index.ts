@@ -54,26 +54,27 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   (async () => {
     const limit = 1000;
     const result = await rankingCache.check(ranking, { limit, _avgGlobal });
-
+    let count = 0;
     if (result.length > 0) {
-      let count = 0;
-
-      async function createCacheInfos() {
-        const accountId = Number(result[count].profile.account_id);
-        const cacheKey = `infos_${accountId}`;
-        const cacheTTL = 23 * 60 + Math.floor(Math.random() * 1);
-        const infosCache = new Revalidate(cacheKey, cacheTTL);
-
-        await start(accountId);
-        await infosCache.check(infos, { account_id: accountId, limit: 1000 });
-
-        if (count < result.length) {
-          await new Promise((resolve) => setTimeout(resolve, 60 * 1400));
-          count += 1;
-          createCacheInfos();
-        }
-      }
       createCacheInfos()
+    } else {
+      createCacheInfos(87683422)
+    }
+
+    async function createCacheInfos(initial?: number) {
+      const accountId = initial || Number(result[count].profile.account_id);
+      const cacheKey = `infos_${accountId}`;
+      const cacheTTL = 23 * 60 + Math.floor(Math.random() * 1);
+      const infosCache = new Revalidate(cacheKey, cacheTTL);
+
+      await start(accountId);
+      await infosCache.check(infos, { account_id: accountId, limit: 1000 });
+
+      if (count < result.length) {
+        await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+        count += 1;
+        createCacheInfos();
+      }
     }
   })()
 })
