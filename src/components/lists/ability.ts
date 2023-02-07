@@ -502,6 +502,7 @@ export const ability = function (id) {
   }
 
   const filter = list.filter(x => +x.id === +id)
+  console.log('filter: ', filter);
   if (filter && filter[0] && filter[0].url) {
     result = filter[0].url
   } else {
