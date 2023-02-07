@@ -9,19 +9,20 @@ import start from './components/Steam/_index';
 
 dotenv.config();
 
-const avgGlobalCache = new Revalidate('avgGlobal', 30);
+const avgGlobalCache = new Revalidate('avgGlobal', 10);
 
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   server.get('/player', async (req, res) => {
     const accountId = Number(req.query.account_id) || undefined;
-    const limit = Number(req.query.limit) || undefined;
-
     if (accountId === undefined) {
       return res.send({ account_id: 'undefined' });
     }
+    const limit = Number(req.query.limit) || undefined;
+    const cacheKey = `player_${accountId}`;
+    const cacheTTL = 1 * 60 + Math.floor(Math.random() * 1);
+    const playerCache = new Revalidate(cacheKey, cacheTTL);
 
-    const result = await player({ account_id: accountId, limit, _avgGlobal });
-
+    const result = await playerCache.check(player, { account_id: accountId, limit, _avgGlobal });
     res.send(result);
     return await start(accountId);
   });
@@ -43,7 +44,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     return await start(accountId);
   });
 
-  const rankingCache = new Revalidate('ranking', 0);
+  const rankingCache = new Revalidate('ranking', 1);
   server.get('/ranking', async (req, res) => {
     const limit = Number(req.query.limit) || undefined;
     const data = await rankingCache.check(ranking, { limit, _avgGlobal });
