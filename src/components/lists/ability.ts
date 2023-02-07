@@ -500,10 +500,15 @@ export const ability = function (id) {
   if (id === null || id === undefined) {
     return id;
   }
-  const [{ url }] = list.filter(x => x.id === id)
-  result = url
+
+  const filter = list.filter(x => x.id === id)
+  if (filter[0] && filter[0].url) {
+    result = filter[0].url
+  }
+
   if (result === '') {
     result = id
   }
+
   return result
 }
