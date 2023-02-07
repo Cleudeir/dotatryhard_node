@@ -680,7 +680,6 @@ export const ability = function (id) {
     result = id;
     noFound.add(id);
     const data = Array.from(noFound);
-    console.log("data: ", data);
     fs.writeFile("ability.json", JSON.stringify(data), (e) => { });
   }
   return result;
