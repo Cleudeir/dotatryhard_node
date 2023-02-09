@@ -2,6 +2,7 @@ import Db from '../../class/Db';
 const { Op } = require("sequelize");
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
+import { Player } from '../../interface/profile';
 dotenv.config();
 const SteamID = require('steamid');
 
@@ -19,12 +20,9 @@ export default async function profiles(_players: any[]) {
   const findFilterPlayer = findPlayer.map((x: { dataValues: { account_id: any; }; }) => x.dataValues.account_id)
   const filteredArray: any[] = _players.filter((value: any) => !findFilterPlayer.includes(value));
   if (filteredArray.length === 0) {
-    console.log('Profile: ', (-time + Date.now()) / 1000, 's');
-    console.log(filteredArray.length, 'Partidas já existem!')
     return null;
   }
   for (let i = 0; i < filteredArray.length; i += 1) {
-    console.log('profile:', i, "/", filteredArray.length)
     const accountId = filteredArray[i];
     const steamId = new SteamID(`[U:1:${accountId}]`).getSteamID64();
     if (accountId < 200) {
@@ -39,7 +37,7 @@ export default async function profiles(_players: any[]) {
         const request = await fetch(`${process.env.base_url}ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.key_api}&steamids=${steamId}`)
         const data = await request.json()
         if (data && data.response && data.response.players && data.response.players.length > 0) {
-          const x = data.response.players[0];
+          const x : Player = data.response.players[0];
           players.push({ ...x, account_id: accountId })
         } else {
           players.push({
@@ -50,7 +48,7 @@ export default async function profiles(_players: any[]) {
           })
         }
       } catch (error) {
-        console.log('error Profile:', error);
+        console.warn('>>>>>> Error Profile: <<<<<<<<<<', error);
       }
     }
   }

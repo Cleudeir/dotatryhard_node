@@ -1,10 +1,7 @@
 import Db from './class/Db';
 import { Op } from "sequelize";
 
-type obj = {
-    [key: string]: any;
-};
-export default async function infos({ account_id, limit }: { account_id: number, limit: number }): Promise<obj> {
+export default async function infos({ account_id, limit }: { account_id: number, limit: number }): Promise<any> {
     if (!limit) {
         limit = 500
     }
@@ -20,8 +17,7 @@ export default async function infos({ account_id, limit }: { account_id: number,
         raw: true
     })
     const _matchIds = queryMatchIds.map((item: any) => item.match_id)
-    console.log('_matchIds: ', _matchIds);
-    const playersMatches: obj = await Db.playersMatches.findAll({
+    const playersMatches: any = await Db.playersMatches.findAll({
         logging: false,
         where: {
             match_id: { [Op.or]: _matchIds }

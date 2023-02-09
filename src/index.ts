@@ -12,6 +12,11 @@ dotenv.config();
 const avgGlobalCache = new Revalidate('avgGlobal', 10);
 
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
+  server.get('/', async (req, res) => {
+    res.send('Hello');
+    return 
+  });
+  
   server.get('/player', async (req, res) => {
     const accountId = Number(req.query.account_id) || undefined;
     if (accountId === undefined) {
