@@ -77,7 +77,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       await infosCache.check(infos, { account_id: accountId, limit: 1000 });
 
       if (count < result.length) {
-        await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+        await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;
         createCacheInfos();
       }
