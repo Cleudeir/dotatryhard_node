@@ -7,7 +7,7 @@ const SteamID = require('steamid');
 
 export default async function upDateProfiles(accountId: number) {
   const time = Date.now();
-  console.log('profile update:')
+  console.log('profile update')
   const steamId = new SteamID(`[U:1:${accountId}]`).getSteamID64();
   let infoPlayer = null
   if (accountId > 200) {
@@ -40,7 +40,7 @@ export default async function upDateProfiles(accountId: number) {
       console.log('Profile: ', infoPlayer.personaname, (-time + Date.now()) / 1000, 's');
       return infoPlayer;
     } catch (error) {
-      console.log('error Profile:', error);
+      console.warn('error Profile:', error);
     }
   }
 }

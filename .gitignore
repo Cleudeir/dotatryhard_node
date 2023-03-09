@@ -3,4 +3,5 @@
 /mysql
 .env
 /build
-/temp/*
+!temp/default.json
+temp/*
