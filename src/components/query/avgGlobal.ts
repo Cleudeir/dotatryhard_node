@@ -18,9 +18,6 @@ export default async function avgGlobal() {
       [sequelize.fn("sum", sequelize.col("leaver_status")), "leaver_status"],
       [sequelize.fn("count", sequelize.col("match_id")), "matches"],
     ],
-    where: {
-      account_id: { [Op.gte]: 150 },
-    },
     logging: false,
     raw: true,
   });
