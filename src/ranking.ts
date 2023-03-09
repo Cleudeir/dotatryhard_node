@@ -35,13 +35,14 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
             model: Db.player,
             as: 'profile',
             attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
-        }],
-        where: {
+        }]
+    })).map((x: { dataValues: any; }) => x.dataValues)
+    /*
+     where: {
             account_id: { [Op.gte]: 150 }
         },
         limit,
-    })).map((x: { dataValues: any; }) => x.dataValues)
-    //--
+    */
     const result = avgPlayer.map((avg: obj) => (rankingRate({ avg, _avgGlobal })))
     console.log('_avgGlobal: ', _avgGlobal);
     const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
@@ -52,6 +53,5 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
         return 0;
     })
     const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i + 1) }))
-    //--
     return resultIds
 }
