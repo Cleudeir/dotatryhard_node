@@ -6,7 +6,7 @@ export default function rankingRate({ avg, _avgGlobal }: { avg: any, _avgGlobal:
     }
 
     const weight: any = {
-        assists: 1,
+        assists: 5,
         denies: 1,
         kills: 1,
         deaths: 1,
