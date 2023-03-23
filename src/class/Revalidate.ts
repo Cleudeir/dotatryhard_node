@@ -33,7 +33,7 @@ export default class Revalidate {
 			data = await _function(params);
 			fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(data));
 		}
-		console.warn("Revalidate ", this.name, ((timeNow - this.timeStart) / 1000 / 60).toFixed(2), '/', this.revalidateTime / 1000 / 60, 'min')
+		console.warn("Revalidate ",(timeNow - this.timeStart) >= this.revalidateTime, this.name, ((timeNow - this.timeStart)/ 1000 ).toFixed(2), '/', this.revalidateTime / 1000, 's')
 		if ((timeNow - this.timeStart) >= this.revalidateTime) {
 			console.warn('update Data')
 			_function(params).then(_data => {
