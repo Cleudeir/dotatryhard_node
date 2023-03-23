@@ -24,7 +24,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     }
     const limit = Number(req.query.limit) || undefined;
     const cacheKey = `player_${accountId}`;
-    const cacheTTL = 1 * 60 + Math.floor(Math.random() * 1);
+    const cacheTTL = 1 * 60;
     const playerCache = new Revalidate(cacheKey, cacheTTL);
 
     const result = await playerCache.check(player, { account_id: accountId, limit, _avgGlobal });
@@ -36,7 +36,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     const accountId = Number(req.query.account_id) || undefined;
     const limit = Number(req.query.limit) || undefined;
     const cacheKey = `infos_${accountId}`;
-    const cacheTTL = 1 * 60 + Math.floor(Math.random() * 1);
+    const cacheTTL = 1 * 60;
     const infosCache = new Revalidate(cacheKey, cacheTTL);
 
     if (accountId === undefined) {
@@ -70,7 +70,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     async function createCacheInfos(initial?: number) {
       const accountId = initial || Number(result[count].profile.account_id);
       const cacheKey = `infos_${accountId}`;
-      const cacheTTL = 23 * 60 + Math.floor(Math.random() * 1);
+      const cacheTTL = 1 * 60;
       const infosCache = new Revalidate(cacheKey, cacheTTL);
 
       await start(accountId);
