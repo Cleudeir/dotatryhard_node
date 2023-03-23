@@ -1,5 +1,3 @@
-const fs = require("fs");
-const noFound: any = new Set();
 export const ability = function (id) {
   const list = [
     { url: "treant_natures_grasp", id: 338 },
@@ -678,9 +676,6 @@ export const ability = function (id) {
     result = filter[0].url;
   } else {
     result = id;
-    noFound.add(id);
-    const data = Array.from(noFound);
-    fs.writeFile("ability.json", JSON.stringify(data), (e) => { });
   }
   return result;
 };
