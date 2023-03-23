@@ -14,9 +14,9 @@ const avgGlobalCache = new Revalidate('avgGlobal', 10);
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   server.get('/', async (req, res) => {
     res.send('Hello');
-    return 
+    return
   });
-  
+
   server.get('/player', async (req, res) => {
     const accountId = Number(req.query.account_id) || undefined;
     if (accountId === undefined) {
@@ -70,7 +70,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     async function createCacheInfos(initial?: number) {
       const accountId = initial || Number(result[count].profile.account_id);
       const cacheKey = `infos_${accountId}`;
-      const cacheTTL = 1 * 60;
+      const cacheTTL = 0;
       const infosCache = new Revalidate(cacheKey, cacheTTL);
 
       await start(accountId);
