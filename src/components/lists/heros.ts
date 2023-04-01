@@ -1,4 +1,4 @@
-export const heros = function (id) {
+export const heros = function (id: number) {
     // https://api.steampowered.com/IEconDOTA2_570/GetHeroes/v0001/?key=**&language=en_us&format=JSON
     const list = [
         {
@@ -617,12 +617,13 @@ export const heros = function (id) {
             "localized_name": "Primal Beast"
         }
     ]
-
-    const [{ name }] = list.filter(x => x.id === id)
-    let url = `${name}`
-    // `https://cdn.datdota.com/images/heroes/${name}_full.png`
-    if (!name) {
-        url = id
+    console.log(id)
+    try {
+        const [{ name }] = list.filter(x => x.id === id)
+        console.log(name)
+        return name
+    } catch (error) {
+        console.log(error)
+        return id
     }
-    return url
 }

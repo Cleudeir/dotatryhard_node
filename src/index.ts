@@ -58,8 +58,8 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   });
 
   (async () => {
-    const limit = 1000;
-    const result = await rankingCache.check(ranking, { limit, _avgGlobal });
+    const limit = 2000;
+    const result = await ranking({ limit, _avgGlobal });
     let count = 0;
     if (result.length > 0) {
       createCacheInfos()
@@ -73,6 +73,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       const infosCache = new Revalidate(`infos_${accountId}`, 0);
       const playerCache = new Revalidate(`player_${accountId}`, 0);
 
+      console.log((count+1) + "/" +result.length);
       await start(accountId);
       await infosCache.check(infos, { account_id: accountId, limit: 1000 });
       await playerCache.check(player, { account_id: accountId, limit: 1000, _avgGlobal });

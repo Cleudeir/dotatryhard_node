@@ -5,4 +5,5 @@
 /build
 !temp/default.json
 temp/*
-!temp/_teste.json
+!temp/_teste.jsongit
+!temp/matchesGameModeError.json
