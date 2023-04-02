@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import infos from './infos';
 import avgGlobal from './components/query/avgGlobal';
 import start from './components/Steam/_index';
-
+import fs from 'fs/promises';
 dotenv.config();
 
 const avgGlobalCache = new Revalidate('avgGlobal', 10);
@@ -59,8 +59,15 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
   (async () => {
     const limit = 2000;
-    const result = await ranking({ limit, _avgGlobal });
-    let count = 0;
+    let result = await ranking({ limit, _avgGlobal });
+    let count: number;
+    try {
+      const read = String(await fs.readFile(`temp/count.json`))
+      count = Number(JSON.parse(read))
+    } catch (error) {
+      count= 0
+    }
+
     if (result.length > 0) {
       createCacheInfos()
     } else {
@@ -80,7 +87,13 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
       if (count < result.length) {
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
+        await fs.writeFile(`temp/count.json`, JSON.stringify(count));
         count += 1;
+        createCacheInfos();
+      }else{
+        count = 0
+        await fs.writeFile(`temp/count.json`, JSON.stringify(count));
+        result = await ranking({ limit, _avgGlobal });
         createCacheInfos();
       }
     }
