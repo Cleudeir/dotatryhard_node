@@ -2,7 +2,8 @@
 type obj = {
 	[key: string]: any;
 };
-const fs = require('fs');
+import {readFile, writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
 
 export default class Revalidate {
 	public name: string;
@@ -16,11 +17,19 @@ export default class Revalidate {
 	}
 	async read(): Promise<any[]> {
 		try {
-			const data: any[] = JSON.parse(await fs.readFileSync(`temp/${this.name}.json`))
+			if (!existsSync(`temp/`)){
+				mkdir(`temp/`);
+			}
+			const buffer = await readFile(`temp/${this.name?.split("_")[0]}/${this.name}.json`) as unknown as string
+			const data: any[] = JSON.parse(buffer)
 			console.warn(`${this.name}.json  >>>> dados encontrados <<<<`)
 			return data
 		} catch (error) {
 			const data: any[] = []
+			if (!existsSync(`temp/${this.name?.split("_")[0]}`)){
+				mkdir(`temp/${this.name?.split("_")[0]}`);
+			}
+			writeFile(`temp/${this.name?.split("_")[0]}/${this.name}.json`, JSON.stringify(data));
 			console.warn(`${this.name}.json `, '>>>> não existe arquio <<<<')
 			return data
 		}
@@ -31,13 +40,13 @@ export default class Revalidate {
 		if (data.length === 0) {
 			console.warn(">>>> Revalidate single start <<<<")
 			data = await _function(params);
-			fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(data));
+			writeFile(`temp/${this.name?.split("_")[0]}/${this.name}.json`, JSON.stringify(data));
 		}
 		console.warn("Revalidate ",(timeNow - this.timeStart) >= this.revalidateTime, this.name, ((timeNow - this.timeStart)/ 1000 ).toFixed(2), '/', this.revalidateTime / 1000, 's')
 		if ((timeNow - this.timeStart) >= this.revalidateTime) {
 			console.warn('update Data')
-			_function(params).then(_data => {
-				fs.writeFileSync(`temp/${this.name}.json`, JSON.stringify(_data));
+			_function(params).then((_data: any) => {
+				writeFile(`temp/${this.name?.split("_")[0]}/${this.name}.json`, JSON.stringify(_data));
 				this.timeStart = Date.now();
 			})
 		}

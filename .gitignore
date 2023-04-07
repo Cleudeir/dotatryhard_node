@@ -5,4 +5,3 @@
 /build
 !temp/default.json
 temp/*
-!temp/matchesGameModeError.json
