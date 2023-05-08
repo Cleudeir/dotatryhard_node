@@ -498,7 +498,6 @@ export const heros = function (id: number) {
       id: 138,
     },
   ];
-  console.log(id);
   try {
     const [{ name }] = list.filter((x) => +x.id === +id);
     return name;
