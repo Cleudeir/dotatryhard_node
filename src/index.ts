@@ -12,7 +12,7 @@ import os from "os";
 const userHomeDir = os.homedir();
 dotenv.config();
 
-const dir = userHomeDir + './temp'
+const dir = userHomeDir + '/temp'
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
