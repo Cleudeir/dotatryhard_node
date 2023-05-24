@@ -8,9 +8,11 @@ import avgGlobal from './components/query/avgGlobal';
 import start from './components/Steam/_index';
 import fsPromises from 'fs/promises';
 import fs from 'fs';
+import os from "os";
+const userHomeDir = os.homedir();
 dotenv.config();
 
-const dir = './temp'
+const dir = userHomeDir + './temp'
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
@@ -68,10 +70,10 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     let result = await ranking({ limit, _avgGlobal });
     let count: number;
     try {
-      const read = String(await fsPromises.readFile(`temp/count.json`))
+      const read = String(await fsPromises.readFile(`${userHomeDir}/temp/count.json`))
       count = Number(JSON.parse(read))
     } catch (error) {
-      count= 0
+      count = 0
     }
 
     if (result.length > 0) {
@@ -86,7 +88,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       const infosCache = new Revalidate(`infos_${accountId}`, 0);
       const playerCache = new Revalidate(`player_${accountId}`, 0);
 
-      console.log((count+1) + "/" +result.length);
+      console.log((count + 1) + "/" + result.length);
       await start(accountId);
       await infosCache.check(infos, { account_id: accountId, limit: 1000 });
       await playerCache.check(player, { account_id: accountId, limit: 1000, _avgGlobal });
@@ -94,13 +96,13 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       if (count < result.length) {
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;
-        await fsPromises.writeFile(`temp/count.json`, JSON.stringify(count));        
-        setTimeout(createCacheInfos,60*1000);
-      }else{
+        await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
+        setTimeout(createCacheInfos, 60 * 1000);
+      } else {
         count = 0
-        await fsPromises.writeFile(`temp/count.json`, JSON.stringify(count));
+        await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
         result = await ranking({ limit, _avgGlobal });
-        setTimeout(createCacheInfos,60*1000);
+        setTimeout(createCacheInfos, 60 * 1000);
       }
     }
   })()

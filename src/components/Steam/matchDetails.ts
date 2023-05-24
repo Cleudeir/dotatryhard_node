@@ -8,8 +8,10 @@ import regions from "../lists/regions";
 import { itens } from "../lists/itens";
 import { heros } from "../lists/heros";
 import { Player } from "../../interface/matchDetails";
-const { Op } = require("sequelize");
-const fs = require('fs');
+import { Op } from "sequelize";
+import fs from 'fs';
+import os from "os";
+const userHomeDir = os.homedir();
 
 export default async function matchDetails(_matches: any[]) {
   const time = Date.now();
@@ -33,19 +35,19 @@ export default async function matchDetails(_matches: any[]) {
     return null;
   }
 
-  let matchesGameModeError : any[];
+  let matchesGameModeError: any[];
   try {
-    matchesGameModeError = JSON.parse(await fs.readFileSync(`temp/matchesGameModeError.json`))
+    matchesGameModeError = JSON.parse(await fs.readFileSync(`${userHomeDir}/temp/matchesGameModeError.json`))
   } catch (error) {
-    matchesGameModeError= []
+    matchesGameModeError = []
   }
-  
+
 
   for (let i = 0; i < _matches.length; i += 1) {
-    if(matchesGameModeError.includes(_matches[i])) {
+    if (matchesGameModeError.includes(_matches[i])) {
       continue;
     }
-    console.log("matchDetails "+(i+1)+"/"+_matches.length)
+    console.log("matchDetails " + (i + 1) + "/" + _matches.length)
     try {
       const request = await fetch(
         `${process.env.base_url}/IDOTA2Match_570/GetMatchDetails/v1?match_id=${_matches[i]}&game_mode=${process.env.game_mode}&key=${process.env.key_api}`
@@ -54,7 +56,7 @@ export default async function matchDetails(_matches: any[]) {
 
       if (data && data.result) {
         const res = data.result;
-        if (res.game_mode !== 18) {          
+        if (res.game_mode !== 18) {
           console.log(res.game_mode)
           matchesGameModeError.push(_matches[i])
           continue;
@@ -142,7 +144,7 @@ export default async function matchDetails(_matches: any[]) {
       console.warn("matchDetails:", error);
     }
   }
-  fs.writeFileSync(`temp/matchesGameModeError.json`, JSON.stringify(matchesGameModeError));
+  fs.writeFileSync(`${userHomeDir}/temp/matchesGameModeError.json`, JSON.stringify(matchesGameModeError));
   const promiseMatches = await Promise.all(matches);
   await Db.match.bulkCreate(promiseMatches, {
     ignoreDuplicates: true,
