@@ -34,10 +34,8 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     const cacheKey = `player_${accountId}`;
     const cacheTTL = 1 * 60;
     const playerCache = new Revalidate(cacheKey, cacheTTL);
-
     const result = await playerCache.check(player, { account_id: accountId, limit, _avgGlobal });
     res.send(result);
-    return await start(accountId);
   });
 
   server.get('/infos', async (req, res) => {
@@ -46,15 +44,11 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     const cacheKey = `infos_${accountId}`;
     const cacheTTL = 1 * 60;
     const infosCache = new Revalidate(cacheKey, cacheTTL);
-
     if (accountId === undefined) {
       return res.send({ account_id: 'undefined' });
     }
-
     const result = await infosCache.check(infos, { account_id: accountId, limit });
-
     res.send(result);
-    return await start(accountId);
   });
 
   const rankingCache = new Revalidate('ranking', 1);
