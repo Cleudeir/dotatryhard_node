@@ -84,8 +84,8 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
       console.log((count + 1) + "/" + result.length);
       await start(accountId);
-      await infosCache.check(infos, { account_id: accountId, limit: 1000 });
-      await playerCache.check(player, { account_id: accountId, limit: 1000, _avgGlobal });
+      await infosCache.check(infos, { account_id: accountId, limit: 500 });
+      await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
 
       if (count < result.length) {
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
