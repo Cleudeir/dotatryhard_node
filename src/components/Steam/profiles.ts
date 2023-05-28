@@ -1,10 +1,10 @@
 import Db from '../../class/Db';
-const { Op } = require("sequelize");
+import { Op } from "sequelize";
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { Player } from '../../interface/profile';
 dotenv.config();
-const SteamID = require('steamid');
+import SteamID from 'steamid';
 
 export default async function profiles(_players: any[]) {
   const time = Date.now();

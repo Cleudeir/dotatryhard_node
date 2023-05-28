@@ -20,6 +20,7 @@ if (!fs.existsSync(dir)) {
 const avgGlobalCache = new Revalidate('avgGlobal', 10);
 
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
+  console.log('_avgGlobal: ', _avgGlobal);
   server.get('/', async (req, res) => {
     res.send('Hello');
     return
@@ -60,8 +61,9 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   });
 
   (async () => {
-    const limit = 2000;
+    const limit = 2500;
     let result = await ranking({ limit, _avgGlobal });
+    console.log('result: ', result);
     let count: number;
     try {
       const read = String(await fsPromises.readFile(`${userHomeDir}/temp/count.json`))
@@ -69,6 +71,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     } catch (error) {
       count = 0
     }
+    console.log('count: ', count);
 
     if (result.length > 0) {
       createCacheInfos()
@@ -76,17 +79,14 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       createCacheInfos(87683422)
     }
 
-    async function createCacheInfos(initial?: number) {
+    async function createCacheInfos(initial?: number) {    
       const accountId = initial || Number(result[count].profile.account_id);
-
       const infosCache = new Revalidate(`infos_${accountId}`, 0);
       const playerCache = new Revalidate(`player_${accountId}`, 0);
-
       console.log((count + 1) + "/" + result.length);
       await start(accountId);
       await infosCache.check(infos, { account_id: accountId, limit: 500 });
       await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
-
       if (count < result.length) {
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;

@@ -51,7 +51,7 @@ export default function rankingRate({ avg, _avgGlobal }: { avg: any, _avgGlobal:
     }
 
     result.rankingRate = Math.floor(totalValue / totalWeight * 3000);
-    result.profile = avg.profile
+    result.profile = avg.profile.dataValues
     return result;
 }
 
