@@ -80,7 +80,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     }
 
     async function createCacheInfos(initial?: number) {   
-      console.log((count + 1) + "/" + result.length); 
+      console.log((count) + "/" + result.length);
       const accountId = initial || Number(result[count].profile.account_id);
       const infosCache = new Revalidate(`infos_${accountId}`, 0);
       const playerCache = new Revalidate(`player_${accountId}`, 0);      
