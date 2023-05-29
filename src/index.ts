@@ -87,7 +87,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       await start(accountId);
       await infosCache.check(infos, { account_id: accountId, limit: 500 });
       await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
-      if (count < result.length) {
+      if (count - 1 < result.length) {
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;
         await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
