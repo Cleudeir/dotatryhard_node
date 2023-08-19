@@ -72,17 +72,13 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
       count = 0
     }
     console.log('count: ', count);
-
-    if (result.length > 0) {
-      createCacheInfos()
-    } else {
-     createCacheInfos(87683422)
-    }
+    createCacheInfos()
+    
 
     async function createCacheInfos(initial?: number) {  
       try {
         console.log((count) + "/" + result.length);
-        let accountId = initial || 0
+        let accountId = 87683422
         if(!initial && result && result[count] && result[count].profile && result[count].profile.account_id){
           accountId = Number(result[count].profile.account_id)
         }
