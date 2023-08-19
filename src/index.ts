@@ -76,28 +76,33 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     if (result.length > 0) {
       createCacheInfos()
     } else {
-      createCacheInfos(87683422)
+     createCacheInfos(87683422)
     }
 
-    async function createCacheInfos(initial?: number) {   
-      console.log((count) + "/" + result.length);
-      const accountId = initial || Number(result[count].profile.account_id);
-      const infosCache = new Revalidate(`infos_${accountId}`, 0);
-      const playerCache = new Revalidate(`player_${accountId}`, 0);      
-      await start(accountId);
-      await infosCache.check(infos, { account_id: accountId, limit: 500 });
-      await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
-      if (count - 1 < result.length) {
-        await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
-        count += 1;
-        await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
-        setTimeout(createCacheInfos, 60 * 1000);
-      } else {
-        count = 0
-        await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
-        result = await ranking({ limit, _avgGlobal });
-        setTimeout(createCacheInfos, 60 * 1000);
-      }
+    async function createCacheInfos(initial?: number) {  
+      try {
+        console.log((count) + "/" + result.length);
+        const accountId = initial || Number(result[count].profile?.account_id || 0);
+        const infosCache = new Revalidate(`infos_${accountId}`, 0);
+        const playerCache = new Revalidate(`player_${accountId}`, 0);      
+        await start(accountId);
+        await infosCache.check(infos, { account_id: accountId, limit: 500 });
+        await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
+        if (count - 1 < result.length) {
+          await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
+          count += 1;
+         // await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
+          setTimeout(createCacheInfos, 60 * 1000);
+        } else {
+          count = 0
+          //await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
+          result = await ranking({ limit, _avgGlobal });
+          setTimeout(createCacheInfos, 60 * 1000);
+        } 
+      } catch (error) {
+        console.error(error)
+      } 
+  
     }
   })()
 })
