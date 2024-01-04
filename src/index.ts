@@ -76,7 +76,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
     async function createCacheInfos(initial?: number) {
       try {
-        console.log((count) + "/" + data.length);
+        console.log('count : ',(count) + "/" + data.length);
         let accountId = 87683422
         if (!initial && data && data[count] && data[count].profile && data[count].profile.account_id) {
           accountId = Number(data[count].profile.account_id)
@@ -84,7 +84,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         const infosCache = new Revalidate(`infos_${accountId}`, 0);
         const playerCache = new Revalidate(`player_${accountId}`, 0);
         await start(accountId);
-        await infosCache.check(infos, { account_id: accountId, limit: 500 });
+        await infosCache.check(infos, { account_id: accountId, limit: 200 });
         await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
         await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;
@@ -92,11 +92,10 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
           count = 0
         }
         await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
-        setTimeout(createCacheInfos, 60 * 1000);
+        setTimeout(createCacheInfos, 1 * 60 * 1000);
       } catch (error) {
         console.error(error)
       }
-
     }
   })()
 })
