@@ -86,13 +86,13 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         await start(accountId);
         await infosCache.check(infos, { account_id: accountId, limit: 200 });
         await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
-        await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
         count += 1;
         if (count === 2500) {
           count = 0
         }
         await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
-        setTimeout(createCacheInfos, 1 * 60 * 1000);
+        await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+        createCacheInfos()
       } catch (error) {
         console.error(error)
       }
