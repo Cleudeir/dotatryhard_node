@@ -43,7 +43,7 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
     })).map((x: { dataValues: any; }) => x.dataValues)
 
     const result = avgPlayer.map((avg: obj) => (rankingRate({ avg, _avgGlobal })));
-    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 10).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
+    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 1).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
         if (a.rankingRate > b.rankingRate)
             return -1;
         if (a.rankingRate < b.rankingRate)

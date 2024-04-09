@@ -21,5 +21,6 @@ export default async function avgGlobal() {
     logging: false,
     raw: true,
   });
+  console.log(data)
   return data;
 }

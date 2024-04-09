@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      NODE_ENV: "production"
+      MYSQL_DATABASE: "DB_DOTA"
+      MYSQL_USER: "MYSQL_USER"
+      MYSQL_PASSWORD: "MYSQL_PASSWORD"
+      MYSQL_ROOT_PASSWORD: "MYSQL_ROOT_PASSWORD"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:

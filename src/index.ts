@@ -17,9 +17,9 @@ if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
 
-const avgGlobalCache = new Revalidate('avgGlobal', 10);
+const avgGlobalCache = new Revalidate('avgGlobal', 0);
 
-avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
+avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {  
   console.log('_avgGlobal: ', _avgGlobal);
   server.get('/', async (req, res) => {
     res.send('Hello');
@@ -33,7 +33,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     }
     const limit = Number(req.query.limit) || undefined;
     const cacheKey = `player_${accountId}`;
-    const cacheTTL = 1 * 60;
+    const cacheTTL = 1 * 10;
     const playerCache = new Revalidate(cacheKey, cacheTTL);
     const result = await playerCache.check(player, { account_id: accountId, limit, _avgGlobal });
     res.send(result);
@@ -43,7 +43,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     const accountId = Number(req.query.account_id) || undefined;
     const limit = Number(req.query.limit) || undefined;
     const cacheKey = `infos_${accountId}`;
-    const cacheTTL = 1 * 60;
+    const cacheTTL = 1 * 10;
     const infosCache = new Revalidate(cacheKey, cacheTTL);
     if (accountId === undefined) {
       return res.send({ account_id: 'undefined' });
@@ -52,7 +52,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
     res.send(result);
   });
 
-  const rankingCache = new Revalidate('ranking', 1);
+  const rankingCache = new Revalidate('ranking', 0);
   server.get('/ranking', async (req, res) => {
     const limit = Number(req.query.limit) || undefined;
     const data = await rankingCache.check(ranking, { limit, _avgGlobal });
@@ -61,37 +61,46 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
 
   (async () => {
     const limit = 2500;
-    const data = await rankingCache.check(ranking, { limit, _avgGlobal });
+    let data = await ranking({ limit, _avgGlobal });
     console.log('result: ', data);
     let count: number;
     try {
       const read = String(await fsPromises.readFile(`${userHomeDir}/temp/count.json`))
-      count = Number(JSON.parse(read))
+      const number = Number(JSON.parse(read))
+      if(data.length < number){
+        count = 0
+      }else {
+        count = number
+      }
     } catch (error) {
       count = 0
     }
-    console.log('count: ', count);
+    console.log('#$ count: ', data.length,  count);
     createCacheInfos()
 
 
     async function createCacheInfos(initial?: number) {
       try {
-        console.log('count : ',(count) + "/" + data.length);
+        console.log('count : ### ', count + "/" + (data.length - 1), ' ###');
+        if(data.length < count){
+          data = await ranking({ limit, _avgGlobal });
+          count = 0
+          createCacheInfos()
+        }  
         let accountId = 87683422
         if (!initial && data && data[count] && data[count].profile && data[count].profile.account_id) {
           accountId = Number(data[count].profile.account_id)
-        }
-        const infosCache = new Revalidate(`infos_${accountId}`, 0);
-        const playerCache = new Revalidate(`player_${accountId}`, 0);
-        await start(accountId);
-        await infosCache.check(infos, { account_id: accountId, limit: 200 });
-        await playerCache.check(player, { account_id: accountId, limit: 20, _avgGlobal });
+        }    
+        await start(accountId);   
+        await infos ({ account_id: accountId, limit: 200 });
+        await player({ account_id: accountId, limit: 20, _avgGlobal });
+ 
         count += 1;
         if (count === 2500) {
           count = 0
         }
         await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
-        await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+        await new Promise((resolve) => setTimeout(resolve, 10 * 1000));
         createCacheInfos()
       } catch (error) {
         console.error(error)
