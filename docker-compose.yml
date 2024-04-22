@@ -15,5 +15,26 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
 
+  dotatryhard-node:
+    build: .
+    restart: always
+    environment:
+      - PORT=${PORT}
+      - DATABASE_DB=${DATABASE_DB}
+      - USER_DB=${USER_DB}
+      - PASSWORD_DB=${PASSWORD_DB}
+      - HOST_DB=${HOST_DB}
+      - PORT_DB=${PORT_DB}
+      - key_api=${key_api}
+      - key_api2=${key_api2}
+      - base_url=${base_url}
+      - game_mode=${game_mode}
+    ports:
+      - "3334:3334"
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+
 volumes:
   mariadb_data:
