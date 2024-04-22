@@ -22,7 +22,7 @@ const avgGlobalCache = new Revalidate('avgGlobal', 0);
 avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {  
   console.log('_avgGlobal: ', _avgGlobal);
   server.get('/', async (req, res) => {
-    res.send('Hello');
+    res.status(200).json({status: 'online'});
     return
   });
 
