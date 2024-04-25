@@ -12,7 +12,6 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
         limit = 20
     }
     const _matchIds = await matchIds({ account_id, limit })
-    // return _matchIds
     const findMatchesInfo: obj = await Db.playersMatches.findAll({
         logging: false,
         where: {

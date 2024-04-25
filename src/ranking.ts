@@ -2,7 +2,7 @@ import sequelize from 'sequelize';
 import Db from './class/Db';
 import { Op } from "sequelize";
 import rankingRate from './components/Math/rankingRate';
-
+import moment from 'moment';
 
 type obj = {
     [key: string]: any;
@@ -11,6 +11,8 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
     if (!limit) {
         limit = 400
     }
+    const last60Days = moment().subtract(60, 'days').toDate();
+
     const avgPlayer: obj = (await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -37,19 +39,22 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
             attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
         }],
         where: {
-            account_id: { [Op.gte]: 150 }
+            account_id: { [Op.gte]: 150 },
+            createdAt: { [Op.gte]: last60Days }
         },
         limit,
     })).map((x: { dataValues: any; }) => x.dataValues)
 
     const result = avgPlayer.map((avg: obj) => (rankingRate({ avg, _avgGlobal })));
-    const resultOrder = result.filter((x: { matches: number; }) => x.matches > 1).sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
-        if (a.rankingRate > b.rankingRate)
-            return -1;
-        if (a.rankingRate < b.rankingRate)
-            return 1;
-        return 0;
-    })
+    const resultOrder = result
+        .filter((x: { matches: number; }) => x.matches > 10)
+        .sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
+            if (a.rankingRate > b.rankingRate)
+                return -1;
+            if (a.rankingRate < b.rankingRate)
+                return 1;
+            return 0;
+        })
     const resultIds = resultOrder.map((x: any, i: number) => ({ ...x, pos: (i + 1) }))
     return resultIds
 }
