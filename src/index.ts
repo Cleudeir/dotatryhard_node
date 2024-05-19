@@ -60,7 +60,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
   });
 
   (async () => {
-    const limit = 2500;
+    const limit = 3000;
     let data = await ranking({ limit, _avgGlobal });
     console.log('result: ', data);
     let count: number;
@@ -96,7 +96,7 @@ avgGlobalCache.check(avgGlobal).then((_avgGlobal) => {
         await player({ account_id: accountId, limit: 20, _avgGlobal });
  
         count += 1;
-        if (count === 2500) {
+        if (count === 3000) {
           count = 0
         }
         await fsPromises.writeFile(`${userHomeDir}/temp/count.json`, JSON.stringify(count));
