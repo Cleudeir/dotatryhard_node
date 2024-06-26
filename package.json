@@ -23,6 +23,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "^6.0.0",
+    "moment": "2.30.1",
     "nodemon": "^2.0.19",
     "rimraf": "^3.0.2",
     "typescript": "^4.7.4"

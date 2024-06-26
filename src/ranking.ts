@@ -2,17 +2,13 @@ import sequelize from 'sequelize';
 import Db from './class/Db';
 import { Op } from "sequelize";
 import rankingRate from './components/Math/rankingRate';
-import moment from 'moment';
 
 type obj = {
     [key: string]: any;
 };
 export default async function ranking({ limit, _avgGlobal }: { limit: number, _avgGlobal: any }): Promise<obj> {
-    if (!limit) {
-        limit = 400
-    }
-    const last60Days = moment().subtract(60, 'days').toDate();
-
+   
+    const lastDays = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
     const avgPlayer: obj = (await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
@@ -40,14 +36,14 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
         }],
         where: {
             account_id: { [Op.gte]: 150 },
-            createdAt: { [Op.gte]: last60Days }
+            createdAt: { [Op.gte]: lastDays },           
         },
         limit,
     })).map((x: { dataValues: any; }) => x.dataValues)
 
     const result = avgPlayer.map((avg: obj) => (rankingRate({ avg, _avgGlobal })));
     const resultOrder = result
-        .filter((x: { matches: number; }) => x.matches > 10)
+        .filter((x: { matches: number; }) => x.matches > 20)
         .sort(function (a: { rankingRate: number; }, b: { rankingRate: number; }) {
             if (a.rankingRate > b.rankingRate)
                 return -1;

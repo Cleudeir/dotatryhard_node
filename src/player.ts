@@ -8,14 +8,12 @@ type obj = {
     [key: string]: any;
 };
 export default async function player({ account_id, limit, _avgGlobal }: PlayerHistory): Promise<obj> {
-    if (!limit) {
-        limit = 20
-    }
+    
     const _matchIds = await matchIds({ account_id, limit })
     const findMatchesInfo: obj = await Db.playersMatches.findAll({
         logging: false,
         where: {
-            match_id: { [Op.or]: _matchIds.map(item => item.match_id) }
+            match_id: { [Op.or]: _matchIds.map(item => item.match_id) },       
         },
         include: [{
             model: Db.player,
@@ -57,7 +55,7 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
             [sequelize.fn('count', sequelize.col('match_id')), 'matches'],
         ],
         where: {
-            account_id: account_id
+            account_id: account_id,           
         },
         include: [{
             model: Db.player,
