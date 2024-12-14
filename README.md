@@ -1,8 +1,7 @@
-
-                # Revalidate.ts                
-                ## project structure
-                ```                    
-                dotatryhard_node/
+# dotatryhard_node                
+## project structure
+```                    
+dotatryhard_node/
     package-lock.json
     README.md
     Dockerfile
@@ -41,8 +40,8 @@
             Server.ts
             Db.ts
             Revalidate.ts                
-                ```
-                ## Sumário do Projeto `dotatryhard-node`
+```
+## Sumário do Projeto
 
 **Objetivo:** Este projeto cria uma API RESTful que fornece dados de jogadores e partidas de Dota 2.  Ele utiliza cache para otimizar o desempenho e integra-se com APIs externas (como a Steam API e OpenDota API) para obter informações de perfis de jogadores e detalhes de partidas.  A aplicação utiliza Node.js, Express.js, Sequelize (para interação com banco de dados MariaDB), e outras bibliotecas para processamento de dados e manipulação de arquivos.
 
