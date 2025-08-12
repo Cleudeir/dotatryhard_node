@@ -77,6 +77,11 @@ class Db {
         })
         this.sync = this.tables()
     }
+
+    public async initialize() {
+        await this.sync
+    }
+
     private async tables() {
 
         this.player.belongsToMany(this.match, {
