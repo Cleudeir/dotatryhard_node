@@ -6,12 +6,12 @@ import upDateProfiles from "./upDateProfiles";
 
 async function start(account_id: number) {
     const history = await matchHistory(account_id)
-    await upDateProfiles(account_id)
+    const updateResult = await upDateProfiles(account_id)
     if (history) {
-        await profiles(history.players)
-        await matchDetails(history.matches)
+        const profileResult = await profiles(history.players)
+        const matchDetailsResult = await matchDetails(history.matches)
+        console.log({ history, profileResult, matchDetailsResult, updateResult })
     }
-    return history
 }
 
 export default start;

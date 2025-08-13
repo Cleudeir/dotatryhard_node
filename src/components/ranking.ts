@@ -1,15 +1,16 @@
 import sequelize from 'sequelize';
-import Db from './class/Db';
+import Db from '../class/Db';
 import { Op } from "sequelize";
-import rankingRate from './components/Math/rankingRate';
+import rankingRate from './Math/rankingRate';
+import { parseSequelize } from '../utils/parser';
 
 type obj = {
     [key: string]: any;
 };
 export default async function ranking({ limit, _avgGlobal }: { limit: number, _avgGlobal: any }): Promise<obj> {
-   
+
     const lastDays = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
-    const avgPlayer: obj = (await Db.playersMatches.findAll({
+    const avgPlayer: obj = parseSequelize(await Db.playersMatches.findAll({
         attributes: ['account_id',
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
             [sequelize.fn('avg', sequelize.col('deaths')), 'deaths'],
@@ -36,10 +37,10 @@ export default async function ranking({ limit, _avgGlobal }: { limit: number, _a
         }],
         where: {
             account_id: { [Op.gte]: 150 },
-            createdAt: { [Op.gte]: lastDays },           
+            createdAt: { [Op.gte]: lastDays },
         },
         limit,
-    })).map((x: { dataValues: any; }) => x.dataValues)
+    }))
 
     const result = avgPlayer.map((avg: obj) => (rankingRate({ avg, _avgGlobal })));
     const resultOrder = result

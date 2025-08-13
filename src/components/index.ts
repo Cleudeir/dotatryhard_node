@@ -1,15 +1,15 @@
-import server from "./class/Server";
+import server from "../class/Server";
 import player from "./player";
 import ranking from "./ranking";
-import Revalidate from "./class/Revalidate";
+import Revalidate from "../class/Revalidate";
 import dotenv from "dotenv";
 import infos from "./infos";
-import avgGlobal from "./components/query/avgGlobal";
-import start from "./components/Steam/_index";
+import avgGlobal from "./query/avgGlobal";
+import start from "../Steam/_index";
 import fsPromises from "fs/promises";
 import fs from "fs";
 import os from "os";
-import Db from "./class/Db";
+import Db from "../class/Db";
 
 dotenv.config();
 const userHomeDir = os.homedir();
@@ -24,7 +24,7 @@ async function init() {
   try {
     // Initialize database first
     await Db.initialize();
-    
+
     // Initialize global averages cache
     const avgGlobalCache = new Revalidate("avgGlobal", 0);
     const globalAverages = await avgGlobalCache.check(avgGlobal);
@@ -80,7 +80,7 @@ async function init() {
       const limit = 3000;
       let data = await ranking({ limit, _avgGlobal: globalAverages });
       console.log("Initial ranking data loaded:", data?.length || 0, "entries");
-      
+
       let count: number;
       try {
         const read = String(await fsPromises.readFile(`${userHomeDir}/temp/count.json`));
@@ -89,34 +89,34 @@ async function init() {
       } catch (error) {
         count = 0;
       }
-      
+
       console.log("Starting from count:", count);
-      
+
       async function createCacheInfos(initial?: number) {
         try {
           console.log("Processing:", count + "/" + data.length);
-          
+
           if (data.length < count || data.length === 0) {
             data = await ranking({ limit, _avgGlobal: globalAverages });
-            count = 0;    
+            count = 0;
           }
-          
+
           let accountId = 87683422; // Default account ID
           if (!initial && data?.[count]?.profile?.account_id) {
             accountId = Number(data[count].profile.account_id);
           }
-          
+
           await start(accountId);
           await infos({ account_id: accountId, limit: 200 });
           await player({ account_id: accountId, limit: 20, _avgGlobal: globalAverages });
 
           count = (count + 1) % 3000;
-          
+
           await fsPromises.writeFile(
             `${userHomeDir}/temp/count.json`,
             JSON.stringify(count)
           );
-          
+
           // Wait before processing next
           await new Promise(resolve => setTimeout(resolve, 10 * 1000));
           await createCacheInfos();

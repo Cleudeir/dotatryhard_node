@@ -2,16 +2,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 import fetch from "node-fetch";
-import Db from "../../class/Db";
-import { ability } from "../lists/ability";
-import regions from "../lists/regions";
-import { itens } from "../lists/itens";
-import { heros } from "../lists/heros";
-import { Player } from "../../interface/matchDetails";
-import { Op } from "sequelize";
-import fs from 'fs';
-import os from "os";
-const userHomeDir = os.homedir();
+import { ability } from "../components/lists/ability";
+import regions from "../components/lists/regions";
+import { itens } from "../components/lists/itens";
+import { heros } from "../components/lists/heros";
+import { Player } from "../interface/matchDetails";
 
 export default async function matchDetails(_matches: any[]) {
   const time = Date.now();
@@ -19,34 +14,10 @@ export default async function matchDetails(_matches: any[]) {
   const playerUnique = new Set();
   const playersMatches: any[] = [];
 
-  const findMatches = await Db.playersMatches.findAll({
-    attributes: ["match_id"],
-    logging: false,
-    where: {
-      match_id: { [Op.or]: _matches },
-    },
-    raw: true,
-  });
-
-  const filteredArray = _matches.filter(
-    (value: any) => !findMatches.includes(value)
-  );
-  if (filteredArray.length === 0) {
-    return null;
-  }
-
-  let matchesGameModeError: any[];
-  try {
-    matchesGameModeError = JSON.parse(await fs.readFileSync(`${userHomeDir}/temp/matchesGameModeError.json`))
-  } catch (error) {
-    matchesGameModeError = []
-  }
-
+  let matchesGameModeError: any;
 
   for (let i = 0; i < _matches.length; i += 1) {
-    if (matchesGameModeError.includes(_matches[i])) {
-      continue;
-    }
+
     console.log("matchDetails " + (i + 1) + "/" + _matches.length)
     try {
       const request = await fetch(
@@ -144,36 +115,10 @@ export default async function matchDetails(_matches: any[]) {
       console.warn("matchDetails:", error);
     }
   }
-  fs.writeFileSync(`${userHomeDir}/temp/matchesGameModeError.json`, JSON.stringify(matchesGameModeError));
+
   const promiseMatches = await Promise.all(matches);
-  await Db.match.bulkCreate(promiseMatches, {
-    ignoreDuplicates: true,
-    updateOnDuplicate: ["match_id"],
-    logging: false,
-  });
 
   const promisePlayersMatches = await Promise.all(playersMatches);
-  await Db.playersMatches.bulkCreate(promisePlayersMatches, {
-    ignoreDuplicates: true,
-    updateOnDuplicate: ["account_id", "match_id"],
-    logging: false,
-  });
-
-  const promisePlayers = await Promise.all(playerUnique);
-
-  [...promisePlayers].map((x: any) => {
-    const item = JSON.parse(x);
-    Db.player.update(
-      { loccountrycode: item.loccountrycode },
-      {
-        logging: false,
-        where: {
-          account_id: item.account_id,
-        },
-      }
-    );
-  });
-
   console.log("matches ", (-time + Date.now()) / 1000, "s");
   return { matches: promiseMatches, playersMatches: promisePlayersMatches };
 }

@@ -1,6 +1,5 @@
 
 export default function rankingRate({ avg, _avgGlobal }: { avg: any, _avgGlobal: any }): any {
-
     function roundNumber(num: number): number {
         return Math.floor((Number(num) * 100)) / 100
     }
@@ -51,6 +50,7 @@ export default function rankingRate({ avg, _avgGlobal }: { avg: any, _avgGlobal:
     }
 
     result.rankingRate = Math.floor(totalValue / totalWeight * 3000);
+    console.log('avg.profile', avg.profile);
     result.profile = avg.profile.dataValues
     return result;
 }

@@ -1,26 +1,27 @@
-import Db from './class/Db';
+import Db from '../class/Db';
 import sequelize, { Op } from "sequelize";
-import rankingRate from './components/Math/rankingRate';
-import matchIds from './components/query/matchIds';
+import rankingRate from './Math/rankingRate';
+import matchIds from './query/matchIds';
+import { parseSequelize } from '../utils/parser';
 
 interface PlayerHistory { account_id: number, limit: number, _avgGlobal: any }
 type obj = {
     [key: string]: any;
 };
 export default async function player({ account_id, limit, _avgGlobal }: PlayerHistory): Promise<obj> {
-    
+
     const _matchIds = await matchIds({ account_id, limit })
-    const findMatchesInfo: obj = await Db.playersMatches.findAll({
+    const findMatchesInfo: obj = parseSequelize(await Db.playersMatches.findAll({
         logging: false,
         where: {
-            match_id: { [Op.or]: _matchIds.map(item => item.match_id) },       
+            match_id: { [Op.or]: _matchIds.map((item: any) => item.match_id) },
         },
         include: [{
             model: Db.player,
             as: 'profile',
             attributes: ['account_id', 'personaname', 'avatarfull', 'loccountrycode'],
         }]
-    })
+    }))
     const data: obj = []
     _matchIds.forEach((item: any) => {
         data.push(
@@ -37,7 +38,10 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
         )
     }
     )
-    const [avg] = (await Db.playersMatches.findAll({
+    const test = parseSequelize(await Db.playersMatches.findAll());
+    console.log('test', test.length);
+
+    const [avg] = parseSequelize(await Db.playersMatches.findAll({
         attributes: [
             [sequelize.fn('avg', sequelize.col('assists')), 'assists'],
             [sequelize.fn('avg', sequelize.col('deaths')), 'deaths'],
@@ -55,14 +59,14 @@ export default async function player({ account_id, limit, _avgGlobal }: PlayerHi
             [sequelize.fn('count', sequelize.col('match_id')), 'matches'],
         ],
         where: {
-            account_id: account_id,           
+            account_id: account_id,
         },
         include: [{
             model: Db.player,
             as: 'profile'
         }],
         logging: false,
-    })).map((x: { dataValues: any; }) => x.dataValues)
+    }))
 
     const _avg = rankingRate({ avg, _avgGlobal })
     return { matches: data, avg: _avg }

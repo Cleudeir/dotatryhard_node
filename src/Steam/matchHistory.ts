@@ -2,26 +2,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 const { Op } = require("sequelize");
 import fetch from 'node-fetch';
-import Db from '../../class/Db';
-import { Match, Player } from '../../interface/matchHistory';
+import Db from '../class/Db';
+import { Match, MatchHistoryResult, Player } from '../interface/matchHistory';
 
 
 export default async function matchHistory(accountId: number) {
     const time = Date.now();
     try {
         const request = await fetch(`${process.env.base_url}IDOTA2Match_570/GetMatchHistory/v1/?account_id=${accountId}&game_mode=${process.env.game_mode}&key=${process.env.key_api2}`)
-        const data = await request.json()
+        const data = await request.json() as MatchHistoryResult;
         if (data && data.result && data.result.matches) {
-            const findMatch = (await Db.playersMatches.findAll({
-                attributes: ['match_id'],
-                logging: false,
-                where: {
-                    match_id: { [Op.or]: data.result.matches.map((x: { match_id: any; }) => x.match_id) },
-                },
-                raw: true
-            })).map((x: { match_id: any; }) => x.match_id)
-
-            const filteredArray = data.result.matches.filter((value: { match_id: any; }) => !findMatch.includes(value.match_id));
+            const filteredArray = data.result.matches
             if (filteredArray.length === 0) {
                 return null;
             }
@@ -34,9 +25,9 @@ export default async function matchHistory(accountId: number) {
                 },
                 );
             });
-            const matches: any[] = Array.from(matchesSingle).map((x: any) => JSON.parse(x))
-            const players: any[] = Array.from(playersSingle).map((x: any) => JSON.parse(x))
-            console.log('matchHistory ', (-time + Date.now()) / 1000, 's');
+            const matches: any[] = Array.from(matchesSingle)
+            const players: any[] = Array.from(playersSingle)
+            console.log('matchHistory ', matches, players, (-time + Date.now()) / 1000, 's');
             return { matches, players }
         }
         return null;

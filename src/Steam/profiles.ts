@@ -1,8 +1,8 @@
-import Db from '../../class/Db';
+import Db from '../class/Db';
 import { Op } from "sequelize";
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import { Player } from '../../interface/profile';
+import { Player } from '../interface/profile';
 dotenv.config();
 import SteamID from 'steamid';
 
@@ -37,7 +37,7 @@ export default async function profiles(_players: any[]) {
         const request = await fetch(`${process.env.base_url}ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.key_api}&steamids=${steamId}`)
         const data = await request.json()
         if (data && data.response && data.response.players && data.response.players.length > 0) {
-          const x : Player = data.response.players[0];
+          const x: Player = data.response.players[0];
           players.push({ ...x, account_id: accountId })
         } else {
           players.push({
@@ -53,7 +53,6 @@ export default async function profiles(_players: any[]) {
     }
   }
   const promisePlayer = await Promise.all(players);
-  await Db.player.bulkCreate(promisePlayer, { ignoreDuplicates: true, updateOnDuplicate: ["account_id"], logging: false })
   console.log('Profile: ', (-time + Date.now()) / 1000, 's');
   return { player: promisePlayer };
 }

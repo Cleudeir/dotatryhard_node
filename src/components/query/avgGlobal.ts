@@ -1,7 +1,8 @@
 import Db from "../../class/Db";
 import sequelize, { Op } from "sequelize";
+import { parseSequelize as parseSequelize } from "../../utils/parser";
 export default async function avgGlobal() {
-  const [data] = await Db.playersMatches.findAll({
+  const [data] = parseSequelize(await Db.playersMatches.findAll({
     attributes: [
       [sequelize.fn("avg", sequelize.col("assists")), "assists"],
       [sequelize.fn("avg", sequelize.col("deaths")), "deaths"],
@@ -20,7 +21,6 @@ export default async function avgGlobal() {
     ],
     logging: false,
     raw: true,
-  });
-  console.log(data)
+  }));
   return data;
 }

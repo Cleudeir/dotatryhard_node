@@ -1,5 +1,6 @@
-import Db from "./class/Db";
+import Db from "../class/Db";
 import { Op } from "sequelize";
+import { parseSequelize } from "../utils/parser";
 
 export default async function infos({
   account_id,
@@ -8,7 +9,7 @@ export default async function infos({
   account_id: number;
   limit: number;
 }): Promise<any> {
-  const queryMatchIds = await Db.playersMatches.findAll({
+  const queryMatchIds = parseSequelize(await Db.playersMatches.findAll({
     attributes: ["match_id"],
     logging: false,
     where: {
@@ -17,9 +18,9 @@ export default async function infos({
     order: [["match_id", "DESC"]],
     limit: limit,
     raw: true,
-  });
+  }));
   const _matchIds = queryMatchIds.map((item: any) => item.match_id);
-  const playersMatches: any = await Db.playersMatches.findAll({
+  const playersMatches: any = parseSequelize(await Db.playersMatches.findAll({
     logging: false,
     where: {
       match_id: { [Op.or]: _matchIds },
@@ -36,6 +37,6 @@ export default async function infos({
         ],
       },
     ],
-  });
+  }));
   return { playersMatches, _matchIds };
 }

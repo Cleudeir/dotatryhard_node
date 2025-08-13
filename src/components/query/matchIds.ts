@@ -1,6 +1,7 @@
 import Db from "../../class/Db";
+import { parseSequelize } from "../../utils/parser";
 export default async function matchIds({ account_id, limit }: { account_id: number, limit: number }) {
-    const queryMatchIds = await Db.playersMatches.findAll({
+    const queryMatchIds = parseSequelize(await Db.playersMatches.findAll({
         attributes: ['match_id'],
         logging: false,
         where: {
@@ -12,7 +13,8 @@ export default async function matchIds({ account_id, limit }: { account_id: numb
         }],
         order: [['match_id', 'DESC']],
         limit: limit,
-    })
-    const match = [...queryMatchIds].map(item => item.match)
+    }))
+    const match = queryMatchIds.map((item: any) => item.match)
+    console.log('matchIds', match)
     return match
 }
